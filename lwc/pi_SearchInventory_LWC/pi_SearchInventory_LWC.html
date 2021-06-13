@@ -1,0 +1,551 @@
+<template>
+    <div class="slds-box" style="background-color:white;">
+        <div class="spinner">
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading" variant="brand" size="large">
+                </lightning-spinner>
+            </template>
+        </div>
+        <lightning-layout>
+            <lightning-layout-item size="12">
+                <div style="font-size: large;font-weight: 900;">Inventory Search </div>
+            </lightning-layout-item>
+        </lightning-layout>
+
+        <lightning-layout>
+            <lightning-layout-item size="12">
+                <div>Search for person served and Add service Code details to Manager Authorization</div>
+            </lightning-layout-item>
+        </lightning-layout>
+        <br />
+        <!--lightning-layout>
+            <lightning-layout-item size="12">
+                <lightning-progress-indicator current-step="3" type="base" has-error="true" variant="base">
+                    <lightning-progress-step label="Step 1" value="1"></lightning-progress-step>
+                    <lightning-progress-step label="Step 2" value="2"></lightning-progress-step>
+                    <lightning-progress-step label="Step 3" value="3"></lightning-progress-step>
+                    <lightning-progress-step label="Step 4" value="4"></lightning-progress-step>
+                </lightning-progress-indicator>
+            </lightning-layout-item>
+        </lightning-layout-->
+
+        <!--PRODUCT DETAILS TO SHOW HERE-->
+        <template if:true={showProductRequestDetails}>
+            <lightning-card icon-name="utility:products" title="Product Request Details">
+                <!--div style="font-size: large;margin-left: 0.3rem;"><b>Inventory Details</b></div>
+                    <br /-->
+
+                <!--iteration-->
+                <template if:true={allProductDetials}>
+                    <lightning-accordion allow-multiple-sections-open>
+                        <template for:each={allProductDetials} for:item="prdtReq">
+                            <!--p key={prdtReq.Id}>iteration **{acc.ProductRequestNumber}</p-->
+
+
+                            <lightning-accordion-section key={prdtReq.Id}
+                                class="slds-border_left slds-m-bottom_xxx-small slds-m-left_xx-small"
+                                style="font-size: 1.125rem;border-width: 0.3rem;border-left-style: solid;border-left-color: darkgray;padding-left: 0.2rem;background-color: gainsboro;"
+                                label={prdtReq.OrderNumber} icon-name="utility:products" if:true={prdtReq.Id}>
+
+                                <div class="slds-box"
+                                    style="margin-left: 0.3rem;font-size: medium;background-color: white; "
+                                    key={prdtReq.Id}>
+
+
+                                    <lightning-layout>
+                                        <lightning-layout-item size="2">
+                                            <div>Work Order</div>
+                                        </lightning-layout-item>
+                                        <lightning-layout-item size="2" style="font-weight: 600;"
+                                            if:true={prdtReq.WorkOrder__c}>
+                                            {prdtReq.WorkOrder__r.WorkOrderNumber}
+                                        </lightning-layout-item>
+                                        <lightning-layout-item size="2" if:false={prdtReq.WorkOrder__c}
+                                            style="font-weight: 600;">
+                                        </lightning-layout-item>
+
+                                        <lightning-layout-item size="3">
+                                        </lightning-layout-item>
+
+                                        <lightning-layout-item size="2">
+                                            <div>Account</div>
+                                        </lightning-layout-item>
+                                        <lightning-layout-item size="2" if:true={prdtReq.AccountId}
+                                            style="font-weight: 600;">
+                                            {prdtReq.Account.Name}
+                                        </lightning-layout-item>
+                                        <lightning-layout-item size="2" if:false={prdtReq.AccountId}>
+                                        </lightning-layout-item>
+                                    </lightning-layout>
+
+                                    <lightning-layout>
+                                        <lightning-layout-item size="2">
+                                            <div>Status</div>
+                                        </lightning-layout-item>
+                                        <lightning-layout-item size="2" if:true={prdtReq.Status}
+                                            style="font-weight: 600;">
+                                            {prdtReq.Status}
+                                        </lightning-layout-item>
+                                        <lightning-layout-item size="2" if:false={prdtReq.Status}>
+                                        </lightning-layout-item>
+
+                                        <lightning-layout-item size="3">
+                                        </lightning-layout-item>
+
+                                        <lightning-layout-item size="2">
+                                            <div>Need By Date</div>
+                                        </lightning-layout-item>
+                                        <lightning-layout-item size="2" if:true={prdtReq.EndDate}
+                                            style="font-weight: 600;">
+
+                                            <lightning-formatted-date-time value={prdtReq.EndDate}>
+                                            </lightning-formatted-date-time>
+                                        </lightning-layout-item>
+                                        <lightning-layout-item size="2" if:false={prdtReq.EndDate}>
+                                        </lightning-layout-item>
+                                    </lightning-layout>
+
+                                    <lightning-layout>
+                                        <lightning-layout-item size="2">
+                                            <div>Owner</div>
+                                        </lightning-layout-item>
+                                        <lightning-layout-item size="2" style="font-weight: 600;">
+                                            {prdtReq.Owner.Name}
+                                        </lightning-layout-item>
+                                        <lightning-layout-item size="3">
+                                        </lightning-layout-item>
+
+
+                                        <lightning-layout-item size="2">
+                                            <div>Shipment Type</div>
+                                        </lightning-layout-item>
+                                        <lightning-layout-item size="2" if:true={prdtReq.Shipment_Type__c}
+                                            style="font-weight: 600;">
+                                            {prdtReq.Shipment_Type__c}
+                                        </lightning-layout-item>
+                                        <lightning-layout-item size="2" if:false={prdtReq.ShipmentType}>
+                                        </lightning-layout-item>
+                                    </lightning-layout>
+
+                                    <lightning-layout>
+                                        <lightning-layout-item size="9"></lightning-layout-item>
+                                        <lightning-layout-item size="2">
+                                            <lightning-button data-target-id={prdtReq.Id} variant="neutral"
+                                                label="Submit for Approval"
+                                                style="width: 50%;top: 9%;transform: translateY(-25%);left: 78.75rem;"
+                                                onclick={submitForApprovalHandler}>
+                                            </lightning-button>
+                                        </lightning-layout-item>
+                                        <lightning-layout-item size="1"></lightning-layout-item>
+                                    </lightning-layout>
+
+
+
+                                    <lightning-accordion allow-multiple-sections-open>
+                                        <lightning-accordion-section key={prdtReq.Id} label="Product Order"
+                                            icon-name="utility:products" if:true={prdtReq.OrderItems}>
+                                            <!--lightning-card icon-name="utility:products"
+                                            title="Product Request Line Item Details"
+                                            if:true={prdtReq.ProductRequestLineItems}-->
+                                            <table class="slds-table slds-table_bordered slds-table_cell-buffer" style="
+                                                    border-left: 3px groove;border-right: 3px groove;
+                                                    border-top: 3px groove;border-bottom: 3px groove;">
+                                                <thead>
+                                                    <tr class="slds-text-title_caps">
+                                                        <th scope="col">
+                                                            <div class="slds-truncate">
+                                                                Source Location
+                                                            </div>
+                                                        </th>
+                                                        <th scope="col">
+                                                            <div class="slds-truncate">
+                                                                Destination Location
+                                                            </div>
+                                                        </th>
+                                                        <th scope="col">
+                                                            <div class="slds-truncate">
+                                                                Product
+                                                            </div>
+                                                        </th>
+                                                        <th scope="col">
+                                                            <div class="slds-truncate">
+                                                                Quantity
+                                                            </div>
+                                                        </th>
+                                                        <th scope="col">
+                                                            <div class="slds-truncate">
+                                                                Status
+                                                            </div>
+                                                        </th>
+                                                        <th scope="col">
+                                                            <div class="slds-truncate">
+                                                                Action
+                                                            </div>
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <template for:each={prdtReq.OrderItems} for:item="lineItems"
+                                                        for:index="indexParent">
+                                                        <tr key={lineItems.Id}>
+                                                            <td data-id={lineItems.Id}>
+                                                                <!--
+                                                           {lineItems.SourceLocation.Name}
+                                                        -->
+                                                            </td>
+                                                            <td>
+                                                                <!--
+                                                        {lineItems.DestinationLocation.Name}
+                                                    -->
+                                                            </td>
+                                                            <td>
+                                                                {lineItems.Product2.Name}
+                                                            </td>
+                                                            <td>
+                                                                {lineItems.Quantity}
+                                                            </td>
+                                                            <td>
+                                                                {lineItems.Status__c}
+                                                            </td>
+                                                            <td>
+                                                                <a onclick={openProductReqLineItemHandler}
+                                                                    data-target-id={lineItems.Id}>View</a>
+                                                            </td>
+                                                        </tr>
+                                                    </template>
+                                                </tbody>
+                                            </table>
+                                            <!--/lightning-card-->
+                                        </lightning-accordion-section>
+                                    </lightning-accordion>
+                                </div>
+                            </lightning-accordion-section>
+                        </template><br />
+
+                    </lightning-accordion>
+                </template>
+            </lightning-card>
+        </template>
+        <br />
+        <lightning-layout>
+            <lightning-layout-item size="12">
+         
+                <c-lookup data-object-name="Product2" onsearch={handleSearch} onselectionchange={handleProductSelect}
+                    label="Search Part" placeholder="Search Part" required>
+                </c-lookup>
+            </lightning-layout-item>
+        </lightning-layout>
+        <br /><br />
+
+        <template if:true={locationResultWrapper}>
+            <lightning-card icon-name="utility:products" title="Inventory Details">
+                <!--div style="font-size: large;margin-left: 0.3rem;"><b>Inventory Details</b></div>
+                <br /-->
+                <!--lightning-layout if:true={enablePrdtRequestBtn}>
+                    <lightning-button class="slds-theme_brand button_request_product" variant="brand"
+                        label="Request Part" onclick={openRequestBtnClick} style="
+                        margin-bottom: 65%;">
+                    </lightning-button>
+                </lightning-layout>
+                <br /><br /-->
+
+                <template for:each={locationResultWrapper} for:item="acc" for:index="indexVar">
+                    <lightning-layout key={acc.locId}>
+                        <lightning-layout-item size="12">
+                            <div class="slds-border_left slds-m-bottom_xxx-small slds-m-left_xx-small"
+                                style="font-size: 1.125rem;border-width: 0.3rem;border-left-style: solid;border-left-color: darkgray;padding-left: 0.2rem;background-color: gainsboro;">
+                                <p style="margin-left: 0.5%;">{acc.locationType}</p>
+                            </div>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                    <br key={acc.key} />
+                    <div style="margin-left: 0.3rem;font-size: medium; " key={acc.Id}>
+                        <lightning-layout>
+                            <lightning-layout-item size="5">
+                                <div>Location/Inventory Name</div>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="5" style="font-weight: 600;">
+                                {acc.name}
+                            </lightning-layout-item>
+                        </lightning-layout>
+
+                        <lightning-layout>
+                            <lightning-layout-item size="5">
+                                <div>Plant Id</div>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="5">
+                                {acc.plant_Id}
+                            </lightning-layout-item>
+                        </lightning-layout>
+
+                        <lightning-layout>
+                            <lightning-layout-item size="5">
+                                <div>Unrestricted Stock</div>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="5">
+                                {acc.availableQuantity}
+                            </lightning-layout-item>
+                        </lightning-layout>
+
+                        <lightning-layout>
+                            <lightning-layout-item size="5">
+                                <div>InTransit Stock</div>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="5">
+                                {acc.InTransit_Stock}
+                            </lightning-layout-item>
+                        </lightning-layout>
+
+                        <br />
+                    </div>
+                </template>
+            </lightning-card>
+        </template>
+
+
+        <!--IF NOT PRODUCT IS AVAILABLE IN INVENTORY-->
+        <template if:true={isProductNotAvailable}>
+            <lightning-layout>
+                <lightning-layout-item size="12">
+                    <div style="font-size: medium;">No Items found in Inventory</div>
+                </lightning-layout-item>
+            </lightning-layout>
+            <br />
+            <lightning-layout>
+                <lightning-layout-item size="12">
+                    <lightning-button label="Check Alternate" variant="brand" onclick={checkAlternatePartBtn}>
+                    </lightning-button>
+                </lightning-layout-item>
+            </lightning-layout>
+        </template>
+
+        <!--SHOW ALTERNATE PART TABLE-->
+        <template if:true={enableAlternatePartPopup}>
+            <div>
+                <section role="dialog" tabindex="-1" aria-modal="true"
+                    class="slds-modal slds-fade-in-open slds-modal_medium">
+                    <div class="slds-scrollable" style="height:38rem;margin-top:4%;">
+                        <div class="slds-modal__container">
+                            <div class="slds-modal__content slds-p-around_medium"
+                                style="border-left: 3px groove;border-right: 3px groove;border-top: 3px groove;min-height:15%;">
+                                <div style="width: auto;">
+                                    <template if:true={showAlternateData}>
+                                        <lightning-card title="Alternate Parts" icon-name="standard:products">
+                                            <lightning-datatable data={showAlternateData} columns={columns}
+                                                key-field="productId" onrowaction={callRowAction}
+                                                onrowselection={selectedRowHandler}>
+                                            </lightning-datatable>
+                                        </lightning-card>
+                                    </template>
+                                    <template if:false={showAlternateData}>
+                                        <div
+                                            style="width: auto;text-align: center;font-size: x-large;font-style: italic;font-family: cursive;">
+                                            No Alternate parts found!!</div>
+                                    </template>
+                                </div>
+                            </div>
+                            <footer class="slds-modal__footer"
+                                style="border-left: 3px groove;border-right: 3px groove;border-bottom: 3px groove;">
+                                <lightning-button label="Close" variant="neutral" onclick={closeAlternatePart}>
+                                </lightning-button>
+                                &nbsp;&nbsp;&nbsp;&nbsp;
+
+                                <template if:true={showAlternateData}>
+                                    <lightning-button label="Search" variant="brand"
+                                        onclick={searchAlternatePartBulkBtn}>
+                                    </lightning-button>
+                                </template>
+                            </footer>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </template>
+
+
+        <!--REQUEST MODAL-->
+        <template if:true={isRequestPartBoolean}>
+            <div>
+                <section role="dialog" tabindex="-1" aria-modal="true"
+                    class="slds-modal slds-fade-in-open slds-modal_medium">
+                    <div class="slds-scrollable" style="height:38rem;margin-top:4%;">
+                        <div class="slds-modal__container">
+                            <div class="slds-modal__content slds-p-around_medium"
+                                style="border-left: 3px groove;border-right: 3px groove;border-top: 3px groove;height:35%;">
+
+                                <!--testing here-->
+                                <lightning-layout if:false={selectedProductRecordType}>
+                                    <lightning-layout-item size="6" if:true={prdtReqRecordTypeOptions}>
+                                        <lightning-radio-group name="radioGroup" label="Order Record Type"
+                                            options={prdtReqRecordTypeOptions} type="radio"
+                                            onchange={handleRecordTypeSelection}>
+                                        </lightning-radio-group>
+                                    </lightning-layout-item>
+                                </lightning-layout>
+
+                                <template if:true={selectedProductRecordType}>
+                                    <lightning-layout>
+                                        <lightning-layout-item size="6" if:true={shipment_Type_PickList_Values}>
+                                            <lightning-combobox name="shipmentType" label="Shipment Type"
+                                                placeholder="--Select--" options={shipment_Type_PickList_Values}
+                                                style="width: 95%;" required>
+                                            </lightning-combobox>
+                                        </lightning-layout-item>
+                                        <lightning-layout-item size="6">
+                                            <lightning-input type="date" name="needByDateInput" label="Need By Date"
+                                                placeholder="type here..." onchange={handleDateSelection} required>
+                                            </lightning-input>
+                                        </lightning-layout-item>
+                                    </lightning-layout>
+                                    <br />
+                                    <lightning-layout>
+                                        <lightning-layout-item size="6">
+                                            <!-- COUNTER LINK
+            https://live.playg.app/play/configurable-slds-counter-component-->
+                                            <div class="slds-form-element" style="width: 35%;">
+                                                <label class="slds-form-element__label slds-m-right_none"
+                                                    for="counter">{label}</label>
+                                                <div class="slds-form-element__control">
+                                                    <button
+                                                        class="slds-button slds-button_icon slds-button_icon-small button_decrement"
+                                                        title="Decrement counter" onclick={handleDecrement}>
+                                                        <lightning-icon icon-name="utility:ban"
+                                                            alternative-text="Decrement counter"
+                                                            title="Decrement counter" size="small" variant="error">
+                                                        </lightning-icon>
+                                                        <span class="slds-assistive-text">Decrement counter</span>
+                                                    </button>
+                                                    <input type="number" id="counter"
+                                                        class="slds-input slds-input_counter" value={counterValue} />
+                                                    <button
+                                                        class="slds-button slds-button_icon slds-button_icon-small button_increment"
+                                                        title="Increment counter" onclick={handleIncrement}>
+                                                        <lightning-icon icon-name="utility:new"
+                                                            alternative-text="Increment counter"
+                                                            title="Increment counter" size="small" variant="success">
+                                                        </lightning-icon>
+                                                        <span class="slds-assistive-text">Increment counter</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </lightning-layout-item>
+                                    </lightning-layout>
+                                </template>
+
+                                <!--ADD UR CONTENT HERE-->
+                            </div>
+                            <footer class="slds-modal__footer"
+                                style="border-left: 3px groove;border-right: 3px groove;border-bottom: 3px groove;"
+                                if:true={selectedProductRecordType}>
+                                <lightning-button label="Cancel" variant="neutral" onclick={closeRequestBtnClick}>
+                                </lightning-button>
+                                &nbsp;&nbsp;&nbsp;&nbsp;
+                                <lightning-button label="Save" variant="brand" onclick={handleSumbitProductRequest}>
+                                </lightning-button>
+                            </footer>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </template>
+
+
+        <!--MODAL TO SHOW THE EXISITNG PRODUCT REQUEST TABLE-->
+        <template if:true={showProductReqLinkModal}>
+            <div>
+                <section role="dialog" tabindex="-1" aria-modal="true"
+                    class="slds-modal slds-fade-in-open slds-modal_medium">
+                    <div class="slds-scrollable" style="height:38rem;margin-top:4%;">
+                        <div class="slds-modal__container">
+                            <div class="slds-modal__content slds-p-around_medium"
+                                style="border-left: 3px groove;border-right: 3px groove;border-top: 3px groove;height:45%;">
+                                <lightning-layout>
+                                    <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                                        <thead>
+                                            <tr class="slds-text-title_caps">
+                                                <th scope="col">
+                                                    <div class="slds-truncate">
+                                                        ORDER No
+                                                    </div>
+                                                </th>
+                                                <th scope="col">
+                                                    <div class="slds-truncate">
+                                                        Status
+                                                    </div>
+                                                </th>
+                                                <th scope="col">
+                                                    <div class="slds-truncate">
+                                                        Shipment Type
+                                                    </div>
+                                                </th>
+                                                <th scope="col">
+                                                    <div class="slds-truncate">
+                                                        Need By Date
+                                                    </div>
+                                                </th>
+                                                <th scope="col">
+                                                    <div class="slds-truncate">
+                                                        Owner
+                                                    </div>
+                                                </th>
+                                                <th scope="col">
+                                                    <div class="slds-truncate">
+                                                        Action
+                                                    </div>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <template for:each={allProductDetials} for:item="prdtReqst"
+                                                for:index="indexParent">
+                                                <tr key={prdtReqst.Id}>
+                                                    <td data-id={prdtReqst.Id}>
+                                                        {prdtReqst.OrderNumber}
+                                                    </td>
+                                                    <td>
+                                                        {prdtReqst.Status}
+                                                    </td>
+                                                    <td>
+                                                        {prdtReqst.Shipment_Type__c}
+                                                    </td>
+                                                    <td>
+                                                        <!--lightning-formatted-date-time value={prdtReq.EndDate}>
+                                                        </lightning-formatted-date-time-->
+
+                                                    </td>
+                                                    <td>
+                                                        {prdtReqst.Owner.Name}
+                                                    </td>
+                                                    <td>
+                                                        <!--a>View</a-->
+                                                        <lightning-button label="Add" variant="brand"
+                                                            data-target-id={prdtReqst.Id}
+                                                            onclick={addNewLineItemToProductHandler}>
+                                                        </lightning-button>
+                                                    </td>
+                                                </tr>
+                                            </template>
+                                        </tbody>
+                                    </table>
+                                </lightning-layout>
+
+                                <!--ADD UR CONTENT HERE-->
+                            </div>
+                            <footer class="slds-modal__footer"
+                                style="border-left: 3px groove;border-right: 3px groove;border-bottom: 3px groove;">
+                                <lightning-button label="Cancel" variant="neutral"
+                                    onclick={closeProductReqLinkBtnClick}>
+                                </lightning-button>
+                                <!--
+                                &nbsp;&nbsp;&nbsp;&nbsp;
+                                <lightning-button label="Link" variant="brand" onclick={handleSumbitProductRequest}>
+                                </lightning-button>
+                                -->
+                            </footer>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </template>
+    </div>
+</template>

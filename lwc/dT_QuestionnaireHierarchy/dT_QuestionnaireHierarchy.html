@@ -1,0 +1,841 @@
+<template>
+    <div class="slds-box" style="background-color:white;">
+        <div class="spinner">
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading" variant="brand" size="large">
+                </lightning-spinner>
+            </template>
+        </div>
+        <!--<lightning-layout>
+            <lightning-layout-item size="4">
+                <div class="slds-text-align_center slds-text-heading_large">--</div>
+            </lightning-layout-item>
+            <lightning-layout-item size="8">
+                <div class="slds-text-align_center slds-text-heading_large">--</div>
+            </lightning-layout-item>
+        </lightning-layout>-->
+        <lightning-layout>
+            <lightning-layout-item size="4">
+                <div class="slds-m-left_medium slds-text-align_left" style="font-size: 1.3rem;margin-left: 42%;">
+                    <p>Actions</p>
+                </div>
+                <div class="slds-box slds-m-around_xx-small">
+                    <lightning-layout>
+                        <lightning-layout-item>
+                            <lightning-button class="slds-theme_default" icon-position="left" variant="default"
+                                type="submit" label="Create Decision Tree" icon-name="utility:add"
+                                disabled={disableDecisionTreeBtn} onclick={openDecisionTreeModal}>
+                            </lightning-button>
+                            <!--div class="slds-m-bottom_xx-small slds-m-left_xx-small">
+
+                            </div-->
+                        </lightning-layout-item>
+                    </lightning-layout>
+                    <br />
+                    <lightning-layout>
+                        <lightning-layout-item size="12" if:true={viewActiveTreeDataTable} flexibility="auto">
+                            <!--TREE VIEW-->
+                            <div class="slds-border_left slds-m-bottom_xxx-small slds-m-left_xx-small"
+                                style="font-size: 1.125rem;border-width: 0.3rem;border-left-style: solid;border-left-color: blue;padding-left: 0.2rem;background-color: aliceblue;">
+                                <p style="margin-left: 3%;">Active Decision Tree Table</p>
+                            </div>
+                            <div class="slds-modal__content slds-p-around_medium" style="max-height: 40%;">
+                                <lightning-datatable data={viewActiveTreeDataTable}
+                                    columns={viewDecisionTreeTableColumns} key-field="id" hide-checkbox-column="true"
+                                    onrowaction={decisionTableHandleRowAction} column-widths-mode="auto">
+                                </lightning-datatable>
+                            </div>
+                            <br />
+                            <div class="slds-border_left slds-m-bottom_xxx-small slds-m-left_xx-small"
+                                if:true={viewInActiveTreeDataTable}
+                                style="font-size: 1.125rem;border-width: 0.3rem;border-left-style: solid;border-left-color: blue;padding-left: 0.2rem;background-color: aliceblue;">
+                                <p style="margin-left: 3%;">In-Active Tree Table</p>
+                            </div>
+                            <div class="slds-modal__content slds-p-around_medium" style="max-height: 40%;"
+                                if:true={viewInActiveTreeDataTable}>
+                                <lightning-datatable data={viewInActiveTreeDataTable}
+                                    columns={viewDecisionTreeTableColumns} key-field="id" hide-checkbox-column="true"
+                                    onrowaction={decisionTableHandleRowAction} column-widths-mode="auto">
+                                </lightning-datatable>
+                            </div>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </div>
+            </lightning-layout-item>
+            <lightning-layout-item size="8">
+                <div class="slds-m-left_medium slds-text-align_left" style="font-size: 1.125rem;">
+                    <lightning-layout>
+                        <lightning-layout-item size="3" flexibility="auto">
+                            <div align="center" style="font-size: 1.5rem;font-family: fangsong;">Search
+                                Question</div>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="7" style="margin-top: -1.6rem;" flexibility="auto">
+                            <lightning-input name="enter-search" placeholder="type here to search questions.."
+                                type="search" onkeyup={handleSearchKeyUp}>
+                            </lightning-input>
+
+                        </lightning-layout-item>
+                        <lightning-layout-item size="2" flexibility="auto" class="slds-align_absolute-center">
+
+                            <lightning-button class="slds-theme_brand" variant="brand" label="Search"
+                                onclick={handleSearch}>
+                            </lightning-button>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </div>
+                <div class="slds-box slds-m-around_xx-small">
+                    <div class="slds-p-around_medium lgc-bg" if:true={decisionTreeName}>
+                        <lightning-layout>
+                            <lightning-layout-item size="10" style="margin-top: -1.6rem;">
+                                <span style="font-size: 1.5rem;color:rgba(27, 82, 151, 1);">{decisionTreeName}</span>
+                            </lightning-layout-item>
+                            <lightning-layout-item size="2" style="margin-top: -1.6rem;">
+                                <lightning-button class="slds-theme_brand" variant="brand" style="
+                                margin-left: 25%;margin-top: 2%;" onclick={activateDeactivateTreeRecord} type="submit"
+                                    label={labelForActivate_DeactivateBtn}>
+                                </lightning-button>
+                            </lightning-layout-item>
+                        </lightning-layout>
+                        <!--show version no-->
+                        <span style="font-size: 1rem;color:rgba(27, 82, 151, 1);">Version No:
+                            {decisionTreeVersionCount}</span>
+                        <!--NOTE MSG TO BE PROVIDED BY SAIKAT-->
+                        <h4 style="font-size: smaller;">(NOTE: Click on the answers to add question)</h4>
+                        <br />
+                        <div if:true={enableAddingQueBtn}>
+                            <lightning-button class="slds-theme_default" icon-position="left" variant="default"
+                                onclick={openQueModal} type="submit" label="Questions" icon-name="utility:add">
+                            </lightning-button>
+                        </div>
+                        <lightning-tree items={newQuestionItemsArray} onselect={handleOnTreeselect}>
+                        </lightning-tree>
+                    </div>
+                </div>
+            </lightning-layout-item>
+        </lightning-layout>
+
+        <!--QUESTION MODAL-->
+        <template if:true={showQuestion}>
+            <div>
+                <section role="dialog" tabindex="-1" aria-modal="true"
+                    class="slds-modal slds-fade-in-open slds-modal_medium">
+                    <div class="slds-scrollable" style="height:38rem;margin-top:4%;">
+                        <div class="slds-modal__container">
+                            <header class="slds-modal__header"
+                                style="border-left: 3px groove;border-right: 3px groove;border-top: 3px groove;">
+                                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                                    title="Close" onclick={closeQueModal}>
+                                    <lightning-icon icon-name="utility:close" size="medium">
+                                    </lightning-icon>
+                                    <span class="slds-assistive-text">Close</span>
+                                </button>
+                                <div class="slds-text-heading_large">Questions</div>
+                            </header>
+                            <div class="slds-modal__content slds-p-around_medium"
+                                style="border-left: 3px groove;border-right: 3px groove;">
+                                <lightning-layout>
+                                    <lightning-layout-item size="12">
+                                        <lightning-textarea label="Enter your Question ?" name="questionInput"
+                                            placeholder="Question to be entered here..." variant="standard" required>
+                                        </lightning-textarea>
+                                        <br />
+                                    </lightning-layout-item>
+                                </lightning-layout>
+                                <!--div class="slds-text-heading_large">ANSWER OPTIONS</div-->
+                                <div class="slds-border_left slds-m-bottom_xx-small slds-m-left_xx-small"
+                                    style="font-size: 1.125rem;border-width: 0.3rem;border-left-style: solid;border-left-color: blue;padding-left: 0.2rem;background-color: aliceblue;">
+                                    <p style="margin-left: 3%;">Answer Type</p>
+                                </div>
+                                <br />
+                                <lightning-layout>
+                                    <lightning-layout-item size="6" if:true={AnswerDisplayTypeValues.data}>
+                                        <lightning-combobox name="progress" label="Answer Display Type" value={value}
+                                            placeholder="-Select-" options={AnswerDisplayTypeValues.data.values}
+                                            onchange={handlePicklistChange} style="width: 80%;">
+                                        </lightning-combobox>
+                                    </lightning-layout-item>
+
+                                    <lightning-layout-item size="6" if:true={isRadioPickList}>
+                                        <lightning-textarea label="Enter correct answer ?" name="correctAnswersInput"
+                                            placeholder="Enter the answer options with semi colon with space (; )"
+                                            variant="standard" style="width: 90%;margin-left: 10%" required>
+                                        </lightning-textarea>
+                                        <span style="margin-left: 11%;font-size: smaller;">Ex:A; C; D</span>
+                                    </lightning-layout-item>
+
+
+                                    <!--message added on 26-Feb-21-->
+                                    <lightning-layout-item size="6" if:true={isMessage}>
+                                        <lightning-textarea label="Enter the message" name="messageToDisplayInput"
+                                            placeholder="Enter the message to display" variant="standard"
+                                            style="width: 90%;margin-left: 10%" required>
+                                        </lightning-textarea>
+                                    </lightning-layout-item>
+                                </lightning-layout>
+                                <!--ANSWER OPTIONS -->
+                                <!--lightning-layout if:true={isRadioPickList}>
+                                    <lightning-layout-item size="6">
+                                        <lightning-textarea label="Enter answer options " name="answerOptionsInput"
+                                            placeholder="Answer options with semi colon seperate (; )..."
+                                            variant="standard" style="width: 90%;" required>
+                                        </lightning-textarea>
+                                        <span style="font-size: smaller;">Ex:A; B; C; D; E</span>
+                                    </lightning-layout-item>
+                                </lightning-layout-->
+                                <!--lightning-layout>
+                                    <lightning-layout-item size="6">
+                                        <lightning-input type="checkbox" label="Do you exclude the other options ?"
+                                            name="isExcludeAndEnd" data-id="isExcludeAndEnd">
+                                        </lightning-input>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="6">
+                                        <lightning-input type="checkbox" label="Do you want to end the flow ?"
+                                            name="isEndOfQuestion" style="width: 90%;margin-left: 10%;" required>
+                                        </lightning-input>
+                                    </lightning-layout-item>
+                                </lightning-layout-->
+
+                                <br />
+                                <div class="slds-border_left slds-m-bottom_xx-small slds-m-left_xx-small"
+                                    style="font-size: 1.125rem;border-width: 0.3rem;border-left-style: solid;border-left-color: blue;padding-left: 0.2rem;background-color: aliceblue;">
+                                    <p style="margin-left: 3%;">Action</p>
+                                </div>
+                                <lightning-layout>
+                                    <lightning-layout-item size="6">
+                                        <lightning-input type="text" label="Enter the url" name="linkUrlInput"
+                                            placeholder="https://www.google.com/" style="width: 90%;">
+                                        </lightning-input>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="6">
+                                        <br />
+                                        <lightning-input type="checkbox" label="Do you want to activate email service ?"
+                                            name="inpActivateEmailService" style="width: 90%;margin-left: 10%;">
+                                        </lightning-input>
+                                    </lightning-layout-item>
+                                </lightning-layout>
+                            </div>
+                            <footer class="slds-modal__footer"
+                                style="border-left: 3px groove;border-right: 3px groove;border-bottom: 3px groove;">
+                                <lightning-button label="Cancel" variant="neutral" onclick={closeQueModal}>
+                                </lightning-button>
+                                &nbsp;&nbsp;&nbsp;&nbsp;
+                                <lightning-button label="Save" variant="brand" onclick={handleSumbitQuestion}>
+                                </lightning-button>
+                            </footer>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </template>
+
+
+
+        <!--SEPERATE MODAL FOR EDIT QUE AND ANSWER-->
+        <template if:true={editQuestionAnswerModal}>
+            <div>
+                <section role="dialog" tabindex="-1" aria-modal="true"
+                    class="slds-modal slds-fade-in-open slds-modal_medium">
+                    <div class="slds-scrollable" style="height:38rem;margin-top:4%;">
+                        <div class="slds-modal__container">
+                            <header class="slds-modal__header"
+                                style="border-left: 3px groove;border-right: 3px groove;border-top: 3px groove;">
+                                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                                    title="Close" onclick={cancelUpdateQuestionAnswer}>
+                                    <lightning-icon icon-name="utility:close" size="medium">
+                                    </lightning-icon>
+                                    <span class="slds-assistive-text">Close</span>
+                                </button>
+                                <div class="slds-text-heading_large">Update Questions and Answer</div>
+                            </header>
+                            <div class="slds-modal__content slds-p-around_medium"
+                                style="border-left: 3px groove;border-right: 3px groove;">
+                                <lightning-layout>
+                                    <lightning-layout-item size="12">
+                                        <lightning-textarea label="Enter your Question ?" name="editQuestion"
+                                            placeholder="Question to be entered here..." variant="standard"
+                                            value={editQuestion} required>
+                                        </lightning-textarea>
+                                        <br />
+                                    </lightning-layout-item>
+                                </lightning-layout>
+                                <!--div class="slds-text-heading_large">ANSWER OPTIONS</div-->
+                                <div class="slds-border_left slds-m-bottom_xx-small slds-m-left_xx-small"
+                                    style="font-size: 1.125rem;border-width: 0.3rem;border-left-style: solid;border-left-color: blue;padding-left: 0.2rem;background-color: aliceblue;">
+                                    <p style="margin-left: 3%;">Answer Type</p>
+                                </div>
+                                <br />
+                                <lightning-layout>
+                                    <lightning-layout-item size="5" if:true={AnswerDisplayTypeValues.data}>
+                                        <lightning-combobox name="editAnswerOptionsType" label="Answer Display Type"
+                                            value={editAnswerType} placeholder="-Select-"
+                                            options={AnswerDisplayTypeValues.data.values}
+                                            onchange={handlePicklistChange} disabled=true>
+                                        </lightning-combobox>
+                                    </lightning-layout-item>
+                                </lightning-layout>
+                                <br />
+                                <!--ANSWER OPTIONS -->
+                                <lightning-layout if:true={editAnswerOptions}>
+                                    <lightning-layout-item size="5">
+                                        <lightning-textarea label="Existing Answer Options " name="editAnswerOptions"
+                                            placeholder="Answer options with semi colon seperate (; )..."
+                                            variant="standard" style="width: 90%;" value={editAnswerOptions}
+                                            disabled=true>
+                                        </lightning-textarea>
+                                    </lightning-layout-item>
+
+                                    <lightning-layout-item size="5">
+                                        <lightning-textarea label="Enter correct answer ?" name="editCorrectAnswer"
+                                            placeholder="Answer options with semi colon seperate (; )..."
+                                            variant="standard" style="width: 90%;margin-left: 10%;"
+                                            value={editCorrectAnswer} onchange={enableMapAnsOnChangeHandler} required>
+                                        </lightning-textarea>
+                                    </lightning-layout-item>
+
+                                    <lightning-layout-item size="2" style="margin-left: 5%;margin-top: 3%;"
+                                        if:true={enableMapAnsBtn}>
+                                        <lightning-button class="slds-theme_brand" variant="brand" label="Map Answers"
+                                            onclick={openAnswerMappingModalHandler}>
+                                        </lightning-button>
+                                        <br />
+                                        <b>
+                                            <h4 style="font-size: smaller;font-style: italic;width: 75%;">NOTE: Use Map
+                                                Answers button
+                                                to rename the options.</h4>
+                                        </b>
+                                    </lightning-layout-item>
+                                </lightning-layout>
+
+                                <br />
+                                <div class="slds-border_left slds-m-bottom_xx-small slds-m-left_xx-small"
+                                    style="font-size: 1.125rem;border-width: 0.3rem;border-left-style: solid;border-left-color: blue;padding-left: 0.2rem;background-color: aliceblue;">
+                                    <p style="margin-left: 3%;">Action</p>
+                                </div>
+                                <lightning-layout>
+                                    <lightning-layout-item size="6">
+                                        <lightning-input type="text" label="Enter the url" name="editURL"
+                                            placeholder="https://www.google.com/" style="width: 90%;" value={editURL}>
+                                        </lightning-input>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="6">
+                                        <br />
+                                        <lightning-input type="checkbox" label="Do you want to activate email service ?"
+                                            name="editIsActivateEmailService" style="width: 90%;margin-left: 10%;"
+                                            checked={editIsActivateEmailService}>
+                                        </lightning-input>
+
+                                    </lightning-layout-item>
+                                </lightning-layout>
+                            </div>
+                            <footer class="slds-modal__footer"
+                                style="border-left: 3px groove;border-right: 3px groove;border-bottom: 3px groove;">
+                                <lightning-button label="Cancel" variant="neutral" onclick={cancelUpdateQuestionAnswer}>
+                                </lightning-button>
+                                &nbsp;&nbsp;&nbsp;&nbsp;
+                                <lightning-button label="Update" variant="brand" onclick={updateQuestionAnswerHandler}>
+                                </lightning-button>
+                            </footer>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </template>
+
+        <!--CREATE DECISION TREE MODAL-->
+        <template if:true={isCreateDecisionTree}>
+            <div>
+                <section role="dialog" tabindex="-1" aria-modal="true"
+                    class="slds-modal slds-fade-in-open slds-modal_medium">
+                    <div class="slds-scrollable" style="height:40rem;margin-top:3rem;">
+                        <div class="slds-modal__container">
+                            <header class="slds-modal__header"
+                                style="border-left: 3px groove;border-right: 3px groove;border-top: 3px groove;">
+                                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                                    title="Close" onclick={closeDecisionTreeModal}>
+                                    <lightning-icon icon-name="utility:close" size="medium">
+                                    </lightning-icon>
+                                    <span class="slds-assistive-text">Close</span>
+                                </button>
+                                <div class="slds-text-heading_large">Create New Tree</div>
+                            </header>
+                            <div class="slds-modal__content slds-p-around_medium"
+                                style="border-left: 3px groove;border-right: 3px groove;">
+                                <lightning-layout>
+                                    <lightning-layout-item size="6">
+                                        <lightning-input type="text" label="Enter the name of Decision Tree"
+                                            name="decisionTreeName" placeholder="type here..."
+                                            style="width: 90%;margin-left: 5%;" required>
+                                        </lightning-input>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="6">
+
+                                        <!--lightning-input type="text" label="Description" name="decisionTreeDescription"
+                                            placeholder="type here..." style="width: 90%;margin-left: 5%;">
+                                        </lightning-input-->
+
+                                        <lightning-textarea label="Description" name="decisionTreeDescription"
+                                            placeholder="Description to be provided here..."
+                                            style="width: 90%;margin-left: 5%;">
+                                        </lightning-textarea>
+
+                                    </lightning-layout-item>
+                                </lightning-layout>
+                                <br />
+                                <lightning-layout>
+                                    <lightning-layout-item size="6">
+                                        <!--add product master lookup-->
+                                        <c-pi_custom_-lookup-l-w-c lookup-label="Product"
+                                            object-api-name="Product_Group_Master__c" icon-name="standard:product"
+                                            data-id="pi_custom_LookupLWC" onrecordselection={onProdcutSelection}
+                                            style="width: 90%;margin-left: 5%;">
+                                        </c-pi_custom_-lookup-l-w-c>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="6" if:true={JobClassificationValues.data}>
+                                        <br />
+                                        <lightning-combobox name="jobClassification" label="Job Classification"
+                                            value={value} placeholder="-Select-"
+                                            onchange={handleJobClassificationPicklistChange}
+                                            options={JobClassificationValues.data.values}
+                                            style="width: 90%;margin-left: 5%;" required>
+                                        </lightning-combobox>
+                                        <!--add job classification-->
+                                    </lightning-layout-item>
+                                </lightning-layout>
+                                <br />
+                                <lightning-layout>
+                                    <lightning-layout-item size="6" if:true={isToCreateRecord}>
+                                        <div class="slds-select_container" style="width: 90%;margin-left: 5%;">
+                                            <span>Select the Object to Create concluding/Follow-Up record</span>
+                                            <select class="slds-select" onchange={handleObjectChange}>
+                                                <option value="Select">Select</option>
+                                                <template for:each={objectLabelOptions} for:item="option">
+                                                    <option key={option.label} class="uiInputSelectOption"
+                                                        value={option.value}>
+                                                        {option.value}
+                                                    </option>
+                                                </template>
+                                            </select>
+                                        </div>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="6" if:true={hasRecordTypes}>
+                                        <div class="slds-select_container" style="width: 90%;margin-left: 5%;">
+                                            <span>Select the record type</span>
+                                            <select class="slds-select" onchange={handleSelectedRecordType}>
+                                                <option value="Select">Select</option>
+                                                <template for:each={mapData} for:item="option">
+                                                    <option key={option.label} class="uiInputSelectOption"
+                                                        value={option.value}>
+                                                        {option.value}
+                                                    </option>
+                                                </template>
+                                            </select>
+                                        </div>
+                                    </lightning-layout-item>
+                                </lightning-layout>
+                                <br />
+                            </div>
+                            <footer class="slds-modal__footer"
+                                style="border-left: 3px groove;border-right: 3px groove;border-bottom: 3px groove;">
+                                <lightning-button label="Cancel" variant="neutral" onclick={closeDecisionTreeModal}>
+                                </lightning-button>
+                                &nbsp;&nbsp;&nbsp;&nbsp;
+                                <lightning-button label="Save" variant="brand" onclick={handleCreateDecisionTree}>
+                                </lightning-button>
+                            </footer>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </template>
+
+
+        <!--SEARCH RESULT TEMPLATE-->
+        <template if:true={searchResult}>
+            <div>
+                <section role="dialog" tabindex="-1" aria-modal="true"
+                    class="slds-modal slds-fade-in-open slds-modal_medium">
+                    <div class="slds-scrollable" style="height:30rem;margin-top:5%;">
+                        <div class="slds-modal__container">
+                            <header class="slds-modal__header"
+                                style="border-left: 3px groove;border-right: 3px groove;border-top: 3px groove;">
+                                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                                    title="Close" onclick={closeSearchModal}>
+                                    <lightning-icon icon-name="utility:close" size="medium">
+                                    </lightning-icon>
+                                    <span class="slds-assistive-text">Close</span>
+                                </button>
+                                <div class="slds-text-heading_large">SEARCH RESULT</div>
+                            </header>
+                            <div class="slds-modal__content slds-p-around_medium"
+                                style="border-left: 3px groove;border-right: 3px groove;">
+                                <div if:true={searchData}>
+                                    <lightning-datatable data={searchData} columns={searchcolumns} key-field="id"
+                                        hide-checkbox-column="true" onrowaction={callRowAction}></lightning-datatable>
+                                </div>
+                                <div if:true={noResultFound}>
+                                    <p style="color: red;font-size: x-large;text-align: center;font-family: serif;"> NO
+                                        RESULT FOUND</p>
+                                </div>
+                            </div>
+                            <footer class="slds-modal__footer"
+                                style="border-left: 3px groove;border-right: 3px groove;border-bottom: 3px groove;">
+                                <lightning-button label="Cancel" variant="neutral" onclick={closeSearchModal}>
+                                </lightning-button>
+                            </footer>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </template>
+
+        <!--EDIT Tree-->
+        <template if:true={isEditDecisionTreeRecord}>
+            <div>
+                <section role="dialog" tabindex="-1" aria-modal="true"
+                    class="slds-modal slds-fade-in-open slds-modal_medium">
+                    <div class="slds-scrollable" style="height:40rem">
+                        <div class="slds-modal__container">
+                            <header class="slds-modal__header"
+                                style="border-left: 3px groove;border-right: 3px groove;border-top: 3px groove;">
+                                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                                    title="Close" onclick={closeEditDecisionRecordModal}>
+                                    <lightning-icon icon-name="utility:close" size="medium">
+                                    </lightning-icon>
+                                    <span class="slds-assistive-text">Close</span>
+                                </button>
+                                <div class="slds-text-heading_large">Edit Tree</div>
+                            </header>
+                            <div class="slds-modal__content slds-p-around_medium"
+                                style="border-left: 3px groove;border-right: 3px groove;">
+                                <lightning-layout>
+                                    <lightning-layout-item size="6">
+                                        <lightning-input label="Name" name="isUpdateDataSetName"
+                                            value={dataSetConfigName} style="width: 90%;margin-left: 5%;">
+                                        </lightning-input>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="6">
+
+                                        <!--lightning-input label="Description" name="isUpdateDataSetDesc"
+                                            value={dataSetConfigDesc} style="width: 90%;margin-left: 5%;">
+                                        </lightning-input-->
+
+                                        <lightning-textarea label="Description" name="isUpdateDataSetDesc"
+                                            value={dataSetConfigDesc} placeholder="Description to be provided here..."
+                                            style="width: 90%;margin-left: 5%;">
+                                        </lightning-textarea>
+                                    </lightning-layout-item>
+                                </lightning-layout>
+                                <br />
+                                <lightning-layout>
+                                    <lightning-layout-item size="6">
+                                        <lightning-combobox name="jobClassification" label="Job Classification"
+                                            value={dataSetJobClassification} placeholder="-Select-"
+                                            onchange={handleEditJobClassificationPicklistChange}
+                                            options={JobClassificationValues.data.values}
+                                            style="width: 90%;margin-left: 5%;">
+                                        </lightning-combobox>
+                                    </lightning-layout-item>
+
+                                    <lightning-layout-item size="6">
+                                        <br />
+                                        <lightning-input type="checkbox" label="Active" name="isUpdateDataSetActive"
+                                            checked={dataSetConfigActive}
+                                            style="width: auto;margin-left: 40%;margin-top: 3%;">
+                                        </lightning-input>
+                                    </lightning-layout-item>
+                                </lightning-layout>
+                                <br />
+                                <lightning-layout>
+                                    <lightning-layout-item size="6" if:true={isToCreateRecord}>
+                                        <div class="slds-select_container" style="width: 90%;margin-left: 5%;">
+                                            <span>Select the Object to Create concluding/Follow-Up record</span>
+                                            <select class="slds-select" onchange={handleObjectChange}>
+                                                <option value={dataSetConfigCreateRecObj}>{dataSetConfigCreateRecObj}
+                                                </option>
+                                                <template for:each={objectLabelOptions} for:item="option">
+                                                    <option key={option.label} class="uiInputSelectOption"
+                                                        value={option.value}>
+                                                        {option.value}
+                                                    </option>
+                                                </template>
+                                            </select>
+                                        </div>
+                                    </lightning-layout-item>
+                                    <!--EXISTING RECORD TYPE-->
+                                    <lightning-layout-item size="6" if:true={hasexistingRecordType}>
+                                        <lightning-input label="Existing record type"
+                                            value={dataSetConfigCreateRecObjRecordType} disabled=true
+                                            style="width: 90%;margin-left: 5%;">
+                                        </lightning-input>
+                                        <!--select class="slds-select">
+                                                <option value={dataSetConfigCreateRecObjRecordType} disabled=true>
+                                                    {dataSetConfigCreateRecObjRecordType}</option>
+                                            </select-->
+                                    </lightning-layout-item>
+
+                                    <!--new-->
+                                    <lightning-layout-item size="6" if:true={hasRecordTypes}>
+                                        <div class="slds-select_container" style="width: 90%;margin-left: 5%;">
+                                            <span>Select the record type</span>
+                                            <select class="slds-select" onchange={handleSelectedRecordType}>
+                                                <option value="Select">Select</option>
+                                                <!--option value={dataSetConfigCreateRecObjRecordType}>
+                                                    {dataSetConfigCreateRecObjRecordType}</option-->
+                                                <template for:each={mapData} for:item="option">
+                                                    <option key={option.label} class="uiInputSelectOption"
+                                                        value={option.value}>
+                                                        {option.value}
+                                                    </option>
+                                                </template>
+                                            </select>
+                                        </div>
+                                    </lightning-layout-item>
+                                </lightning-layout>
+                                <br />
+
+                            </div>
+                            <footer class="slds-modal__footer"
+                                style="border-left: 3px groove;border-right: 3px groove;border-bottom: 3px groove;">
+                                <lightning-button label="Cancel" variant="neutral"
+                                    onclick={closeEditDecisionRecordModal}>
+                                </lightning-button>
+                                &nbsp;&nbsp;&nbsp;&nbsp;
+                                <lightning-button label="Update" variant="brand" onclick={updateDataSetConfigRecord}>
+                                </lightning-button>
+                            </footer>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </template>
+
+
+        <!--MAP ANSWER MODAL-->
+        <template if:true={openAnswerMapModal}>
+            <div>
+                <section role="dialog" tabindex="-1" aria-modal="true"
+                    class="slds-modal slds-fade-in-open slds-modal_medium">
+                    <div class="slds-scrollable" style="height:45rem">
+                        <div class="slds-modal__container">
+                            <header class="slds-modal__header"
+                                style="border-left: 3px groove;border-right: 3px groove;border-top: 3px groove;">
+                                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                                    title="Close" onclick={closeAnswerMappingModalHandler}>
+                                    <lightning-icon icon-name="utility:close" size="medium">
+                                    </lightning-icon>
+                                    <span class="slds-assistive-text">Close</span>
+                                </button>
+                                <div class="slds-text-heading_large">Map Answers</div>
+                            </header>
+                            <div class="slds-modal__content slds-p-around_medium"
+                                style="border-left: 3px groove;border-right: 3px groove;">
+
+                                <lightning-layout>
+                                    <lightning-layout-item size="12" if:true={isToCreateRecord}>
+                                        <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                                            <thead>
+                                                <tr class="slds-text-title_caps">
+                                                    <th scope="col">
+                                                        <div class="slds-truncate">
+                                                            Old Value
+                                                        </div>
+                                                    </th>
+                                                    <th scope="col">
+                                                        <div class="slds-truncate">
+                                                            New Value
+                                                        </div>
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <template for:each={OldValueNewValueOptions} for:item="exist"
+                                                    for:index="indexParent">
+                                                    <tr key={exist.oldValues}>
+                                                        <td data-id={exist.oldValues}>
+                                                            {exist.oldValues}
+                                                        </td>
+                                                        <td>
+                                                            <div class="slds-select_container"
+                                                                style="width: 50%;margin-left: 2%;">
+                                                                <select class="slds-select" data-id={exist.oldValues}
+                                                                    onchange={newValueSelected} required>
+                                                                    <option value="Select">Select</option>
+                                                                    <template for:each={newlyEnteredOptions}
+                                                                        for:item="option">
+                                                                        <option key={option.label}
+                                                                            class="uiInputSelectOption"
+                                                                            value={option.label}>
+                                                                            {option.label}
+                                                                        </option>
+                                                                    </template>
+                                                                </select>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </template>
+                                            </tbody>
+                                        </table>
+                                    </lightning-layout-item>
+                                </lightning-layout>
+                                <br />
+                            </div>
+                            <footer class="slds-modal__footer"
+                                style="border-left: 3px groove;border-right: 3px groove;border-bottom: 3px groove;">
+                                <lightning-button label="Cancel" variant="neutral"
+                                    onclick={closeAnswerMappingModalHandler}>
+                                </lightning-button>
+                                &nbsp;&nbsp;&nbsp;&nbsp;
+                                <lightning-button label="Map" variant="brand" onclick={renameAnswerHandler}>
+                                </lightning-button>
+                            </footer>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </template>
+
+
+        <!--VERSION MODAL-->
+        <template if:true={showVersionModal}>
+            <div>
+                <section role="dialog" tabindex="-1" aria-modal="true"
+                    class="slds-modal slds-fade-in-open slds-modal_medium">
+                    <div class="slds-scrollable" style="height:35rem">
+                        <div class="slds-modal__container">
+                            <header class="slds-modal__header"
+                                style="border-left: 3px groove;border-right: 3px groove;border-top: 3px groove;">
+                                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                                    title="Close" onclick={closeVersionModal}>
+                                    <lightning-icon icon-name="utility:close" size="medium">
+                                    </lightning-icon>
+                                    <span class="slds-assistive-text">Close</span>
+                                </button>
+                                <div class="slds-text-heading_large">
+                                    <!--span style="font-size: 1.5rem;color: blue;">{decisionTreeVersionName} </span>
+                                    &nbsp;--> Version History
+                                </div>
+                            </header>
+                            <div class="slds-modal__content slds-p-around_medium"
+                                style="border-left: 3px groove;border-right: 3px groove;">
+                                <lightning-layout>
+                                    <lightning-layout-item size="12" if:true={decisionTreeVersionDataTable}>
+                                        <!--div class="slds-modal__content slds-p-around_medium" style="height: 40%;">
+                                        </div-->
+                                        <div class="slds-scrollable">
+                                            <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                                                <thead>
+                                                    <tr class="slds-text-title_caps">
+                                                        <th scope="col">
+                                                            <div class="slds-truncate">
+                                                                Name
+                                                            </div>
+                                                        </th>
+                                                        <th scope="col">
+                                                            <div class="slds-truncate">
+                                                                Version Count
+                                                            </div>
+                                                        </th>
+                                                        <th scope="col">
+                                                            <div class="slds-truncate">
+                                                                Status
+                                                            </div>
+                                                        </th>
+                                                        <th scope="col">
+                                                            <div class="slds-truncate">
+                                                                Record To Create
+                                                            </div>
+                                                        </th>
+                                                        <th scope="col">
+                                                            <div class="slds-truncate">
+                                                                Created Date
+                                                            </div>
+                                                        </th>
+                                                        <th scope="col">
+                                                            <div class="slds-truncate">
+                                                                View
+                                                            </div>
+                                                        </th>
+                                                        <th scope="col">
+                                                            <div class="slds-truncate">
+                                                                Edit
+                                                            </div>
+                                                        </th>
+                                                        <th scope="col">
+                                                            <div class="slds-truncate">
+                                                                Delete
+                                                            </div>
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <template for:each={decisionTreeVersionDataTable}
+                                                        for:item="treeData" for:index="indexParent2">
+                                                        <tr key={treeData.Id}>
+                                                            <td>
+                                                                {treeData.Name}
+                                                            </td>
+                                                            <td>
+                                                                {treeData.DT_Version_Count__c}
+                                                            </td>
+                                                            <td>
+                                                                {treeData.DT_Active__c}
+                                                            </td>
+                                                            <td>
+                                                                {treeData.DT_Object_to_create_record__c}
+                                                            </td>
+                                                            <td>
+                                                                <lightning-formatted-date-time
+                                                                    value={treeData.CreatedDate} year="numeric"
+                                                                    day="2-digit" month="long" hour="2-digit"
+                                                                    minute="2-digit">
+                                                                </lightning-formatted-date-time>
+                                                            </td>
+                                                            <td>
+                                                                <!--lightning-button label="View" variant="brand"
+                                                                id={treeData.Id} onclick={displayVersionOnUIHandler}>
+                                                            </lightning-button-->
+                                                                <a onclick={displayVersionOnUIHandler}
+                                                                    data-target-id={treeData.Id}>View</a>
+                                                            </td>
+                                                            <td><a onclick={editVersionOnUIHandler}
+                                                                    data-target-id={treeData.Id}>Edit</a>
+                                                            </td>
+                                                            <td>
+                                                                <a onclick={deleteVersionOnUIHandler}
+                                                                    data-target-id={treeData.Id}>Delete</a>
+                                                            </td>
+                                                        </tr>
+                                                    </template>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <!--lightning-datatable data={decisionTreeVersionDataTable}
+                                            columns={decisionTreeVersionTableColumns} key-field="id"
+                                            hide-checkbox-column="true" column-widths-mode="auto">
+                                        </lightning-datatable-->
+                                    </lightning-layout-item>
+                                </lightning-layout>
+
+                                <lightning-layout>
+                                    <lightning-layout-item size="12" if:true={hasVersions}>
+                                        <div
+                                            style="font-size: large;border-radius: 5px; border: 2px solid dodgerblue;text-align: center;font-family: fangsong;">
+                                            NO
+                                            History Found!
+                                        </div>
+                                    </lightning-layout-item>
+                                </lightning-layout>
+                            </div>
+                            <footer class="slds-modal__footer"
+                                style="border-left: 3px groove;border-right: 3px groove;border-bottom: 3px groove;">
+                                <lightning-button label="Close" variant="neutral" onclick={closeVersionModal}>
+                                </lightning-button>
+                            </footer>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </template>
+
+    </div>
+</template>

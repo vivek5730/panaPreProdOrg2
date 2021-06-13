@@ -1,0 +1,336 @@
+<template>
+    <lightning-record-edit-form record-id={recordId} object-api-name="Case" onsuccess={handleSuccess} onsubmit ={handleSubmit}>
+        <lightning-messages>
+        </lightning-messages>
+
+
+
+        <lightning-accordion allow-multiple-sections-open
+                             onsectiontoggle={handleSectionToggle}
+                             active-section-name={activeSections}>
+            <lightning-accordion-section name="A" label="Customer/Product Details">
+
+                <lightning-layout multiple-rows="true" vertical-align="end">
+                    <lightning-layout-item size="12" small-device-size="10" medium-device-size="8" large-device-size="6" padding="around-small">
+                            <div class="slds-form-element">
+                                    <div class="slds-form-element__control">
+                                        <lightning-input-field field-name='ASC__c' readonly="true"></lightning-input-field>
+                                    </div>
+                                </div> 
+                    </lightning-layout-item>
+        
+                    <lightning-layout-item size="12" small-device-size="10" medium-device-size="8" large-device-size="6" padding="around-small">
+                        <div class="slds-form-element">
+                                <div class="slds-form-element__control">
+                                    <lightning-input-field field-name='AccountId'></lightning-input-field>
+                                </div>
+                            </div> 
+                </lightning-layout-item>
+        
+               
+        
+            <lightning-layout-item size="12" small-device-size="10" medium-device-size="8" large-device-size="6" padding="around-small">
+                <div class="slds-form-element">
+                        <div class="slds-form-element__control">
+                            <lightning-input-field field-name='ContactId'></lightning-input-field>
+                        </div>
+                    </div> 
+        </lightning-layout-item>
+        
+         
+        
+        <lightning-layout-item size="12" small-device-size="10" medium-device-size="8" large-device-size="6" padding="around-small">
+        <div class="slds-form-element">
+                <div class="slds-form-element__control">
+                    <lightning-input-field field-name='ContactMobile'></lightning-input-field>
+                </div>
+            </div> 
+        </lightning-layout-item>
+        
+        <lightning-layout-item size="12" small-device-size="10" medium-device-size="8" large-device-size="6" padding="around-small">
+            <div class="slds-form-element">
+                    <div class="slds-form-element__control">
+                        <lightning-input-field field-name='Model_Number__c'></lightning-input-field>
+                    </div>
+                </div> 
+        </lightning-layout-item>
+        
+        <lightning-layout-item size="12" small-device-size="10" medium-device-size="8" large-device-size="6" padding="around-small">
+        <div class="slds-form-element">
+                <div class="slds-form-element__control">
+                    <lightning-input-field field-name='BSM__c'></lightning-input-field>
+                </div>
+            </div> 
+        </lightning-layout-item>
+        
+        <lightning-layout-item size="12" small-device-size="10" medium-device-size="8" large-device-size="6" padding="around-small">
+            <div class="slds-form-element">
+                    <div class="slds-form-element__control">
+                        <lightning-input-field field-name='Priority' required=true></lightning-input-field>
+                    </div>
+                </div> 
+        </lightning-layout-item>
+        
+        <lightning-layout-item size="12" small-device-size="10" medium-device-size="8" large-device-size="6" padding="around-small">
+        <div class="slds-form-element">
+                <div class="slds-form-element__control">
+                    <lightning-input-field field-name='VOC_Landing_Time_Spent__c'></lightning-input-field>
+                </div>
+            </div> 
+        </lightning-layout-item>
+                </lightning-layout><br/>
+            </lightning-accordion-section>
+    
+            <lightning-accordion-section name="B" label="VOC Details">
+                <lightning-layout multiple-rows="true" vertical-align="end">
+                    <lightning-layout-item size="12" small-device-size="10" medium-device-size="8" large-device-size="6" padding="around-small">
+                            <div class="slds-form-element">
+                                    <div class="slds-form-element__control">
+                                        <lightning-input-field field-name='VOC_Number__c'></lightning-input-field>
+                                    </div>
+                                </div> 
+                    </lightning-layout-item>
+        
+                    <lightning-layout-item size="12" small-device-size="10" medium-device-size="8" large-device-size="6" padding="around-small">
+                        <div class="slds-form-element">
+                                <div class="slds-form-element__control">
+                                    <lightning-input-field field-name='VOC_Depth1__c' required=true></lightning-input-field>
+                                </div>
+                            </div> 
+                </lightning-layout-item>
+        
+                <lightning-layout-item size="12" small-device-size="10" medium-device-size="8" large-device-size="6" padding="around-small">
+                    <div class="slds-form-element">
+                            <div class="slds-form-element__control">
+                                <lightning-input-field field-name='VOC_Cause__c' required=true></lightning-input-field>
+                            </div>
+                        </div> 
+            </lightning-layout-item>
+        
+            <lightning-layout-item size="12" small-device-size="10" medium-device-size="8" large-device-size="6" padding="around-small">
+                <div class="slds-form-element">
+                        <div class="slds-form-element__control">
+                            <lightning-input-field field-name='VOC_Depth2__c' required=true></lightning-input-field>
+                        </div>
+                    </div> 
+        </lightning-layout-item>
+        
+        <lightning-layout-item size="12" small-device-size="10" medium-device-size="8" large-device-size="6" padding="around-small">
+            <div class="slds-form-element">
+                    <div class="slds-form-element__control">
+                        <lightning-input-field field-name='VOC_Target__c' required=true></lightning-input-field>
+                    </div>
+                </div> 
+        </lightning-layout-item>
+        
+        <lightning-layout-item size="12" small-device-size="10" medium-device-size="8" large-device-size="6" padding="around-small">
+        <div class="slds-form-element">
+                <div class="slds-form-element__control">
+                    <lightning-input-field field-name='VOC_Depth3__c' required=true></lightning-input-field>
+                </div>
+            </div> 
+        </lightning-layout-item>
+        
+        <lightning-layout-item size="12" small-device-size="10" medium-device-size="8" large-device-size="6" padding="around-small">
+            <div class="slds-form-element">
+                    <div class="slds-form-element__control">
+                        <lightning-input-field field-name='VOC_Updation_Remarks__c'></lightning-input-field>
+                    </div>
+                </div> 
+        </lightning-layout-item>
+        
+        <lightning-layout-item size="12" small-device-size="10" medium-device-size="8" large-device-size="6" padding="around-small">
+        <div class="slds-form-element">
+                <div class="slds-form-element__control">
+                    <lightning-input-field field-name='Satisfaction_Type__c'></lightning-input-field>
+                </div>
+            </div> 
+        </lightning-layout-item>
+        
+        <lightning-layout-item size="12" small-device-size="10" medium-device-size="8" large-device-size="6" padding="around-small">
+            <div class="slds-form-element">
+                    <div class="slds-form-element__control">
+                        <lightning-input-field field-name='VOC_Source__c'></lightning-input-field>
+                    </div>
+                </div> 
+        </lightning-layout-item>
+        
+        <lightning-layout-item size="12" small-device-size="10" medium-device-size="8" large-device-size="6" padding="around-small">
+        <div class="slds-form-element">
+                <div class="slds-form-element__control">
+                    <lightning-input-field field-name='Social_Media__c'></lightning-input-field>
+                </div>
+            </div> 
+        </lightning-layout-item>
+        <lightning-layout-item size="12" small-device-size="10" medium-device-size="8" large-device-size="6" padding="around-small">
+            <div class="slds-form-element">
+                    <div class="slds-form-element__control">
+                        <lightning-input-field field-name='VOC_Details__c'></lightning-input-field>
+                    </div>
+                </div> 
+            </lightning-layout-item>
+            <lightning-layout-item size="12" small-device-size="10" medium-device-size="8" large-device-size="6" padding="around-small">
+                <div class="slds-form-element">
+                        <div class="slds-form-element__control">
+                            <lightning-input-field field-name='VOC_Reason__c'></lightning-input-field>
+                        </div>
+                    </div> 
+                </lightning-layout-item>
+                <lightning-layout-item size="12" small-device-size="10" medium-device-size="8" large-device-size="6" padding="around-small">
+                    <div class="slds-form-element">
+                            <div class="slds-form-element__control">
+                                <lightning-input-field field-name='VOC_Title__c'></lightning-input-field>
+                            </div>
+                        </div> 
+                    </lightning-layout-item>
+                </lightning-layout><br/>    
+            </lightning-accordion-section>
+    
+            <lightning-accordion-section name="C" label="User Remarks">
+                <lightning-layout multiple-rows="true" vertical-align="end">
+                <lightning-layout-item size="12" small-device-size="10" medium-device-size="8" large-device-size="6" padding="around-small">
+                    <div class="slds-form-element">
+                            <div class="slds-form-element__control">
+                                <lightning-input-field field-name='Branch_master__c'></lightning-input-field>
+                            </div>
+                        </div> 
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12" small-device-size="10" medium-device-size="8" large-device-size="6" padding="around-small">
+                        <div class="slds-form-element">
+                                <div class="slds-form-element__control">
+                                    <lightning-input-field field-name='Remarks__c'></lightning-input-field>
+                                </div>
+                            </div> 
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" small-device-size="10" medium-device-size="8" large-device-size="6" padding="around-small">
+                            <div class="slds-form-element">
+                                    <div class="slds-form-element__control">
+                                        <lightning-input-field field-name='Pending_Re__c'></lightning-input-field>
+                                    </div>
+                                </div> 
+                            </lightning-layout-item>
+                        </lightning-layout>
+            </lightning-accordion-section>
+
+
+
+            <lightning-accordion-section name="D" label="Additional Information">
+                <lightning-layout multiple-rows="true" vertical-align="end">
+                <lightning-layout-item size="12" small-device-size="10" medium-device-size="8" large-device-size="6" padding="around-small">
+                    <div class="slds-form-element">
+                            <div class="slds-form-element__control">
+                                <lightning-input-field field-name='To_Email_Address__c'></lightning-input-field>
+                            </div>
+                        </div> 
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12" small-device-size="10" medium-device-size="8" large-device-size="6" padding="around-small">
+                        <div class="slds-form-element">
+                                <div class="slds-form-element__control">
+                                    <lightning-input-field field-name='OwnerId'></lightning-input-field>
+                                </div>
+                            </div> 
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" small-device-size="10" medium-device-size="8" large-device-size="6" padding="around-small">
+                            <div class="slds-form-element">
+                                    <div class="slds-form-element__control">
+                                        <lightning-input-field field-name='Status' required=true></lightning-input-field>
+                                    </div>
+                                </div> 
+                            </lightning-layout-item>
+
+                            <lightning-layout-item size="12" small-device-size="10" medium-device-size="8" large-device-size="6" padding="around-small">
+                                <div class="slds-form-element">
+                                        <div class="slds-form-element__control">
+                                            <lightning-input-field field-name='Origin' required="true"></lightning-input-field>
+                                        </div>
+                                    </div> 
+                            </lightning-layout-item>
+                            <lightning-layout-item size="12" small-device-size="10" medium-device-size="8" large-device-size="6" padding="around-small">
+                                <div class="slds-form-element">
+                                        <div class="slds-form-element__control">
+                                            <lightning-input-field field-name='VOC_Age_Days__c'></lightning-input-field>
+                                        </div>
+                                    </div> 
+                            </lightning-layout-item>    
+                        </lightning-layout>
+            </lightning-accordion-section>
+
+
+
+            <lightning-accordion-section name="E" label="Address Information">
+                <lightning-layout multiple-rows="true" vertical-align="end">
+                <lightning-layout-item size="12" small-device-size="10" medium-device-size="8" large-device-size="6" padding="around-small">
+                    <div class="slds-form-element">
+                            <div class="slds-form-element__control">
+                                <lightning-input-field field-name='City__c'></lightning-input-field>
+                            </div>
+                        </div> 
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12" small-device-size="10" medium-device-size="8" large-device-size="6" padding="around-small">
+                        <div class="slds-form-element">
+                                <div class="slds-form-element__control">
+                                    <lightning-input-field field-name='State__c'></lightning-input-field>
+                                </div>
+                            </div> 
+                        </lightning-layout-item>
+                        
+                        </lightning-layout>
+            </lightning-accordion-section>
+        
+
+
+        <lightning-accordion-section name="F" label="Description Information">
+            <lightning-layout multiple-rows="true" vertical-align="end">
+            <lightning-layout-item size="12" small-device-size="10" medium-device-size="8" large-device-size="6" padding="around-small">
+                <div class="slds-form-element">
+                        <div class="slds-form-element__control">
+                            <lightning-input-field field-name='Subject'></lightning-input-field>
+                        </div>
+                    </div> 
+                </lightning-layout-item>
+                <lightning-layout-item size="12" small-device-size="10" medium-device-size="8" large-device-size="6" padding="around-small">
+                    <div class="slds-form-element">
+                            <div class="slds-form-element__control">
+                                <lightning-input-field field-name='Description'></lightning-input-field>
+                            </div>
+                        </div> 
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12" small-device-size="10" medium-device-size="8" large-device-size="6" padding="around-small">
+                        <div class="slds-form-element">
+                                <div class="slds-form-element__control">
+                                    <lightning-input-field field-name='SuppliedEmail'></lightning-input-field>
+                                </div>
+                            </div> 
+                        </lightning-layout-item>
+                    </lightning-layout>
+        </lightning-accordion-section>
+
+
+        <lightning-accordion-section name="G" label="System Information">
+            <lightning-layout multiple-rows="true" vertical-align="end">
+            <lightning-layout-item size="12" small-device-size="10" medium-device-size="8" large-device-size="6" padding="around-small">
+                <div class="slds-form-element">
+                        <div class="slds-form-element__control">
+                            <lightning-input-field field-name='CreatedById'></lightning-input-field>
+                        </div>
+                    </div> 
+                </lightning-layout-item>
+                <lightning-layout-item size="12" small-device-size="10" medium-device-size="8" large-device-size="6" padding="around-small">
+                    <div class="slds-form-element">
+                            <div class="slds-form-element__control">
+                                <lightning-input-field field-name='LastModifiedById'></lightning-input-field>
+                            </div>
+                        </div> 
+                    </lightning-layout-item>
+                    
+                    </lightning-layout>
+        </lightning-accordion-section>
+
+    </lightning-accordion>
+
+    <div class="slds-m-top_medium">
+        <lightning-button variant="brand" type="submit" name="save" label="Save" class="slds-float_right"></lightning-button>  
+       </div>
+       
+    </lightning-record-edit-form>
+</template>

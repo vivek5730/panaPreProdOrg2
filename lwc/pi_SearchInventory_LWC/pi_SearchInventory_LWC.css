@@ -1,0 +1,20 @@
+.button_decrement {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-left: .75rem;
+}
+
+.button_increment {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: .75rem;
+}
+
+.button_request_product {
+    position: absolute;
+    top: 15%;
+    transform: translateY(-50%);
+    right: .75rem;
+}

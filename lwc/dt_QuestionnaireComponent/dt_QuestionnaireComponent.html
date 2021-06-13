@@ -1,0 +1,238 @@
+<template>
+    <lightning-card if:true={isTreeConfigured}>
+        <hr style="height:2px;border-width:0;color:gray;background-color:gray">
+        <div align="center" style="font-size: large;font-style: italic;font-family: cursive;">Please contact your
+            Admin!!</div>
+        <hr style="height:2px;border-width:0;color:gray;background-color:gray">
+    </lightning-card>
+
+    <article if:false={isTreeConfigured}>
+        <br />
+        <!--Modal Header-->
+        <!--div class="modal-header slds-modal__header slds-size_1-of-1"
+            style=" padding: 0rem;height: unset;max-height: unset;overflow-y: hidden;">
+            <h4 class="title slds-text-heading--medium"
+                style="font-size: 1.145rem;border-width: 0.3rem;border-left-style: solid;border-left-color: blue;padding-left: 0.2rem;background-color: aliceblue;">
+                {headerContent}</h4>
+        </div>
+      <br /-->
+        <!--End Modal Header-->
+
+        <lightning-layout >
+            <lightning-layout-item size="12">
+                <!--div class="slds-box slds-m-around_xx-small"-->
+
+                <template if:true={questions}>
+                    <div align="center"
+                        style="font-size: x-large;white-space: pre-line;word-wrap: break-word;color: white;">
+                        {questionNo}.
+                        {questions}
+                    </div>
+                </template>
+                <br />
+                <!--WHEN ANSWER IS RADIO-->
+                <template if:true={isRadioButton}>
+                    <div align="center">
+                        <lightning-radio-group name="radioButtonGroup" onchange={handleRadioChange} options={options}
+                            value={selectedValue} type="button" style="font-size: 140%;">
+                        </lightning-radio-group>
+                        <!--lightning-radio-group name={questionNo} onchange={handleRadioChange} options={options} type="button"
+                            style="font-size: 140%;">
+                        </lightning-radio-group-->
+                        <br />
+                    </div>
+                </template>
+
+                <!--PICKLIST -->
+                <template if:true={isPicklist}>
+                    <lightning-card>
+                        <div class="slds-select_container" style="max-width: 35%;margin-left: 35%;">
+                            <select class="slds-select" onchange={handlePickListChange} disabled={isPicklistDisabled}
+                                required={isAttributeRequired}>
+                                <option value="Select">Select</option>
+                                <template for:each={options} for:item="option">
+                                    <option key={option.label} class="uiInputSelectOption" value={option.value}>
+                                        {option.value}
+                                    </option>
+                                </template>
+                            </select>
+                        </div>
+                    </lightning-card>
+                </template>
+
+                <!--to capture rating remark-->
+                <template if:true={isRemarks}>
+                    <div style="max-width: 40%;margin-left: 30%;background: white;">
+                        <b>Could you please tell us which are the areas you feel
+                            panasonic does well in?</b>
+                        <lightning-textarea name="remarks" onchange={handleRemarksChange}
+                            placeholder="Enter your remarks..." onkeyup={enableRadioAfterRemarkKeyUp}>
+                        </lightning-textarea>
+                    </div>
+                </template>
+
+
+                <!--WHEN ANSWER IS TEXT-->
+                <template if:true={answerIsText}>
+                    <div style="max-width: 40%;margin-left: 30%;">
+                        <lightning-textarea name="input3" onchange={handleTextChange}
+                            placeholder="type your input here...">
+                        </lightning-textarea>
+                    </div>
+                </template>
+
+                <!--NUMBER FIELD-->
+                <template if:true={isNumber}>
+                    <lightning-input type="number" style="max-width: 35%;margin-left: 35%;"
+                        onchange={handleNumberChange} name="input3" label="" placeholder="Enter the number here...">
+                    </lightning-input>
+                </template>
+                <!--DATE FIELD-->
+                <template if:true={isDate}>
+                    <lightning-input type="date" style="max-width: 35%;margin-left: 35%;" onchange={handleDateChange}
+                        name="input4" label="" placeholder="Select the Date here...">
+                    </lightning-input>
+                </template>
+                <!--EMAIL FIELD-->
+                <template if:true={isEmail}>
+                    <lightning-input type="email" style="max-width: 35%;margin-left: 35%;" onchange={handleEmailChange}
+                        placeholder="Enter the Mail id here...">
+                    </lightning-input>
+                </template>
+                <lightning-layout>
+                    <lightning-layout-item size="6" if:true={isEmailAction}>
+                        <div align="center">
+                            <a onclick={openEmailModal}> Email Us! </a>
+                        </div>
+                    </lightning-layout-item>
+                    <!--EMAIL ACTION END-->
+                    <lightning-layout-item size="6" if:true={isLinkAction}>
+                        <div align="center">
+                            Link: <a href={displayLink} target="_blank">Click Here!</a>
+                        </div>
+                    </lightning-layout-item>
+                </lightning-layout>
+                <br />
+                <div align="center">
+                    <!--lightning-button variant="brand-outline" label="Previous" disabled={isEndOfPreviousQuestions}
+                            title="Previous" onclick={getPrevQuestionOnClick} class="slds-m-left_x-small">
+                        </lightning-button>
+                        <lightning-button variant="brand-outline" label="Next" disabled={isEndOfNextQuestions}
+                            title="Next" onclick={getNextQuestionOnClick} class="slds-m-left_x-small">
+                        </lightning-button-->
+                    <template if:true={isEndOfNextQuestions}>
+                        <lightning-button variant="success" label="Finish" disabled={isfinishClicked}
+                            title="Primary action with lighter look" onclick={questionsfinished}
+                            class="slds-m-left_x-small">
+                        </lightning-button>
+                    </template>
+                </div>
+                <!--/div-->
+            </lightning-layout-item>
+            <!--lightning-layout-item size="3">
+                <div class="slds-box slds-m-around_xx-small">
+                    <div class="slds-border_left slds-m-bottom_xx-small slds-m-left_xx-small"
+                        style="font-size: 1.125rem;border-width: 0.3rem;border-left-style: solid;border-left-color: blue;padding-left: 0.2rem;background-color: aliceblue;">
+                        <p style="margin-left: 3%;" align="center">User Answers</p>
+                    </div>
+                    <div class="slds-p-around_medium lgc-bg" if:true={hasUserAnswered}>
+                        <lightning-tree items={newQuestionItemsArray} header="Result">
+                        </lightning-tree>
+                    </div>
+                </div>
+            </lightning-layout-item-->
+        </lightning-layout>
+        <!--Modal Footer-->
+        <template if:true={hasFooter}>
+            <div class="modal-footer slds-modal__footer slds-size_1-of-1">
+                <h2 id="modal-heading-02" class="slds-text-heading_medium slds-hyphenate"
+                    style=" padding: 0rem;height: unset;max-height: unset;overflow-y: hidden;">
+                    <div align="center">
+                        {footerContent}
+                    </div>
+                </h2>
+            </div>
+        </template>
+        <!--End of Modal Footer-->
+
+        <!--footer class="slds-modal__footer">
+        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate"
+            style=" padding: 0rem;height: unset;max-height: unset;overflow-y: hidden;">
+            <span style="margin-right: 50%;">
+                footerContent
+            </span>
+        </h2>
+    </footer-->
+
+        <!--SEND EMAIL MODAL-->
+        <template if:true={openEmailmodel}>
+            <div class="demo-only" style="height: 640px;">
+                <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                    aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header"
+                            style="border-left: 3px groove;border-right: 3px groove;border-top: 3px groove;">
+                            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                                title="Close" onclick={closeModal}>
+                                <lightning-icon icon-name="utility:close" size="medium">
+                                </lightning-icon>
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                            <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Email
+                            </h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium"
+                            style="border-left: 3px groove;border-right: 3px groove;" id="modal-content-id-1">
+                            <!--onchange removed onchange={handleToAddressChange}-->
+                            <lightning-input type="email" label="To Email address" name="enter-to-Address"
+                                placeholder="toAddress@mail.com" minlength="6" required>
+                            </lightning-input>
+                            <br />
+
+                            <lightning-input type="text" label="Enter Subject" name="enter-subject"
+                                placeholder="type here..." minlength="6" required>
+                            </lightning-input>
+                            <br />
+                            <lightning-textarea name="mailBody" label="Enter the body"
+                                placeholder="Type your message here..." minlength="6" required>
+                            </lightning-textarea>
+                            <br />
+                            <!--FILE UPLOAD BEGIN-->
+                            <lightning-card title="File Upload">
+                                <div style="margin-left:4%">
+                                    <div>
+                                        <lightning-input label="" name="file uploader" onchange={handleFilesChange}
+                                            type="file" multiple></lightning-input>
+                                    </div><br />
+                                    <div class="slds-text-body_small slds-text-color_error">{fileName}
+                                    </div><br />
+                                    <lightning-layout if:true={hasEmailFiles}>
+                                        <lightning-layout-item size="3">
+                                            <lightning-button class="slds-m-top--medium" label={UploadFile}
+                                                onclick={handleSave} variant="brand" disabled={isTrue}>
+                                            </lightning-button>
+                                        </lightning-layout-item>
+                                        <lightning-layout-item size="3" style="margin-left: 5%;">
+                                            <lightning-button class="slds-m-top--medium" label="Delete File"
+                                                onclick={deleteFileAttachment} variant="brand">
+                                            </lightning-button>
+                                        </lightning-layout-item>
+                                    </lightning-layout>
+                                </div><br /><br />
+                            </lightning-card>
+                            <!--FILE UPLOAD END-->
+                        </div>
+                        <footer class="slds-modal__footer"
+                            style="border-left: 3px groove;border-right: 3px groove;border-bottom: 3px groove;">
+                            <lightning-button label="Cancel" variant="neutral" onclick={closeEmailModal}>
+                            </lightning-button>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <lightning-button label="Send" variant="brand" onclick={sendEmailMethod}>
+                            </lightning-button>
+                        </footer>
+                    </div>
+                </section>
+            </div>
+        </template>
+    </article>
+</template>

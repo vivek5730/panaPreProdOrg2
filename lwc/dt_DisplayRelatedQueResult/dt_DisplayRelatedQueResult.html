@@ -1,0 +1,22 @@
+<template>
+    <div class="container" style="background: white;">
+        <template if:true={queResultList}>
+            <h2 align="center" style="font-size: large;"> Survey Results</h2>
+            <br />
+            <!--lightning-datatable data={queResultList} hide-checkbox-column="true" show-row-number-column="true"
+                columns={columns} key-field="Id" onrowaction={callRowAction}>
+            </lightning-datatable-->
+            <lightning-datatable data={queResultList} hide-checkbox-column="true" columns={columns} key-field="Id"
+                onrowaction={callRowAction}>
+            </lightning-datatable>
+        </template>
+        <template if:true={error}>
+            {error}
+        </template>
+        <template if:true={noRecordsFound}>
+            <b>
+                <h2 align="center" style="FONT-SIZE: 3EM;MARGIN-TOP: 5%;font-size: large;"> NO RECORDS FOUND!! </h2>
+            </b>
+        </template>
+    </div>
+</template>

@@ -1,0 +1,374 @@
+<template>
+	<div style={backgroundStyle}>
+		<div class="spinner">
+			<template if:true={isLoading}>
+				<lightning-spinner alternative-text="Loading" variant="brand" size="large">
+				</lightning-spinner>
+			</template>
+		</div>
+		<div class={className}>
+			<lightning-layout>
+				<lightning-layout-item size="11">
+					<span class="fontcolor" style="font-size: xx-large;font-family: sans-serif;">
+                    <b>Panasonic</b>
+                </span>
+				</lightning-layout-item>
+				<!--lightning-layout-item size="1">
+                <span class="fontcolor">
+                    <lightning-button label="Close" variant="neutral" onclick={closeHelper}>
+                    </lightning-button>
+                </span>
+            </lightning-layout-item-->
+			</lightning-layout>
+
+
+			<lightning-layout if:true={customerName}>
+				<lightning-layout-item size="9"></lightning-layout-item>
+				<lightning-layout-item size="1"></lightning-layout-item>
+				<lightning-layout-item size="1" style="color: white;font-size: medium;margin-left: 5%;">
+					Hi {customerName}
+				</lightning-layout-item>
+			</lightning-layout>
+
+			<lightning-layout if:true={customerName}>
+				<lightning-layout-item size="9"></lightning-layout-item>
+				<lightning-layout-item size="1" style="color: orange;margin-left: 5%;">
+					JOB ID
+				</lightning-layout-item>
+				<lightning-layout-item size="1" style="color: white;">
+					{workOrderNo}
+				</lightning-layout-item>
+			</lightning-layout>
+
+			<lightning-layout if:true={customerName}>
+				<lightning-layout-item size="9"></lightning-layout-item>
+				<lightning-layout-item size="1" style="color: orange;margin-left: 5%;">
+					Job Type
+				</lightning-layout-item>
+				<lightning-layout-item size="1" style="color: white;">
+					{job_Classification}
+				</lightning-layout-item>
+			</lightning-layout>
+
+			<lightning-layout if:true={customerName}>
+				<lightning-layout-item size="9"></lightning-layout-item>
+				<lightning-layout-item size="1" style="color: orange;margin-left: 5%;">
+					Product
+				</lightning-layout-item>
+				<lightning-layout-item size="1" style="color: white;">
+					{productName}
+				</lightning-layout-item>
+			</lightning-layout>
+
+
+			<br /><br />
+			<template if:true={isDisclaimerPage}>
+				<br /><br />
+				<lightning-layout>
+					<lightning-layout-item size="4"></lightning-layout-item>
+					<lightning-layout-item size="4">
+						<p class="fontcolor" style="font-size:large;text-align:center;">
+							<b>Disclaimer</b>
+							<br />
+							<br />
+                        {NPS_Disclaimer}
+							<br />
+                    </p>
+							<br />
+							<div style="text-align: center;">
+								<lightning-button class="slds-theme_brand" variant="brand" label="Continue"
+									onclick={disclaimerOnClick}>
+								</lightning-button>
+							</div>
+					</lightning-layout-item>
+					<lightning-layout-item size="4"></lightning-layout-item>
+				</lightning-layout>
+			</template>
+
+			<template if:true={isStartPage}>
+				<lightning-layout>
+					<lightning-layout-item size="4"></lightning-layout-item>
+					<lightning-layout-item size="4">
+						<p class="fontcolor" style="font-size: x-large;text-align:center;">
+							Customer Feedback
+						</p>
+					</lightning-layout-item>
+					<lightning-layout-item size="4"></lightning-layout-item>
+				</lightning-layout>
+				<br />
+
+				<lightning-layout>
+					<lightning-layout-item size="4"></lightning-layout-item>
+					<lightning-layout-item size="4">
+						<span class="fontcolor">
+                        <div class="slds-box slds-box_x-small" style="background-color: white;">
+                            <lightning-layout>
+                                <lightning-layout-item size="12" style="text-align: center;color: black;"
+                                    if:true={LanguageTypeValues.data}>
+                                    <div style="text-align: center;color: black;"><b>Select Language</b></div>
+                                    <lightning-combobox name="languageType" placeholder="--Select--"
+                                        options={LanguageTypeValues.data.values} onchange={handleLanguagePicklistChange}
+                                        style="width: 100%;" value={langTypeValue}>
+                                    </lightning-combobox>
+                                    <br />
+                                    <div style="text-align: center;">
+                                        <lightning-button class="slds-theme_brand" variant="brand" label="Submit"
+                                            onclick={handleLanguageSubmit}>
+                                        </lightning-button>
+                                    </div>
+                                </lightning-layout-item>
+                            </lightning-layout>
+                            <br />
+                        </div>
+                    </span>
+					</lightning-layout-item>
+					<lightning-layout-item size="4"></lightning-layout-item>
+				</lightning-layout>
+			</template>
+
+			<template if:true={showSessionExpiredMsg}>
+				<lightning-layout>
+					<lightning-layout-item size="4"></lightning-layout-item>
+					<lightning-layout-item size="4" style="text-align:center;">
+						<p class="fontcolor" style="font-size: large;text-align:center;">
+							This URL is not active anymore. <br /> Thank you
+                    </p>
+					</lightning-layout-item>
+					<lightning-layout-item size="4"></lightning-layout-item>
+				</lightning-layout>
+			</template>
+
+			<template if:true={showSurveyQuestions}>
+				<c-dt_-questionnaire-component onanswersubmit={handleOnFinish}></c-dt_-questionnaire-component>
+			</template>
+
+
+			<br /><br />
+			<template if:true={isShowDriverIcons}>
+				<lightning-layout if:false={isMobileDevice}>
+					<lightning-layout-item size="1"></lightning-layout-item>
+					<lightning-layout-item size="2">
+						<a onclick={handleCallCenterClick}> <img src={DT_CallCenterIconImg} alt="CallCenter"
+                            style="border-radius: 50%;width: 40%;margin-left: 15%;background: white;padding: 5%;"></a>
+					</lightning-layout-item>
+
+					<lightning-layout-item size="2">
+						<a onclick={handleCostOfServiceClick}><img src={DT_CostOfServiceIconImg}
+                            style="border-radius: 50%;width: 40%;margin-left: 15%;background: white;padding: 5%;"></a>
+					</lightning-layout-item>
+
+					<lightning-layout-item size="2">
+						<a onclick={handleProductExpClick}> <img src={DT_DropBoxIconImg}
+                            style="border-radius: 50%;width: 39%;margin-left: 15%;background: white;padding: 2%;"></a>
+					</lightning-layout-item>
+
+					<lightning-layout-item size="2">
+						<a onclick={handleQualityOfServiceClick}> <img src={DT_QualityOfServiceIconImg}
+                            style="border-radius: 50%;width: 48%;margin-left: 10%;background: white;padding: 5%;"></a>
+					</lightning-layout-item>
+
+					<lightning-layout-item size="2">
+						<a onclick={handleSpeedOfServiceClick}> <img src={DT_SpeedOfServiceIconImg}
+                            style="border-radius: 50%;width: 48%;margin-left: 10%;background: white;padding: 4%;"></a>
+					</lightning-layout-item>
+					<lightning-layout-item size="1"></lightning-layout-item>
+
+				</lightning-layout>
+				<lightning-layout if:false={isMobileDevice}>
+					<lightning-layout-item size="1"></lightning-layout-item>
+					<lightning-layout-item size="2">
+						<span class="fontcolor" style="margin-left: 5%;">{NPS_CallCenterExperienceLabel}</span>
+						<!--div class="fontcolor" align="center">{NPS_CallCenterExperienceLabel}
+                    </div-->
+					</lightning-layout-item>
+					<lightning-layout-item size="2">
+						<span class="fontcolor" style="margin-left: 15%;">{NPS_CostOfServiceLabel}</span>
+					</lightning-layout-item>
+					<lightning-layout-item size="2">
+						<span class="fontcolor" style="margin-left: 10%;">{NPS_ProductExperienceLabel}</span>
+					</lightning-layout-item>
+					<lightning-layout-item size="2">
+						<span class="fontcolor" style="margin-left: 10%;">{NPS_QualityOfServiceLabel}</span>
+					</lightning-layout-item>
+
+					<lightning-layout-item size="2">
+						<span class="fontcolor" style="margin-left: 8%;">{NPS_SpeedOfServiceLabel}</span>
+					</lightning-layout-item>
+					<lightning-layout-item size="1"></lightning-layout-item>
+
+				</lightning-layout>
+
+				<!--FOR MOBILE VIEW-->
+				<lightning-layout if:true={isMobileDevice}>
+					<br />
+					<lightning-layout-item size="2">
+						<a onclick={handleCallCenterClick}> <img src={DT_CallCenterIconImg} alt="CallCenter"
+                            style="border-radius: 50%;min-width: 65%;max-width: 80%; margin-left: 25%;background: white;"></a>
+					</lightning-layout-item>
+				</lightning-layout>
+				<lightning-layout if:true={isMobileDevice}>
+
+					<lightning-layout-item size="2">
+						<div class="fontcolor" align="center" style="margin-left: 15%;">{NPS_CallCenterExperienceLabel}
+						</div>
+					</lightning-layout-item>
+				</lightning-layout>
+				<br /><br />
+				<lightning-layout if:true={isMobileDevice}>
+					<lightning-layout-item size="2">
+						<a onclick={handleCostOfServiceClick}><img src={DT_CostOfServiceIconImg}
+                            style="border-radius: 50%;min-width: 65%;max-width: 80%;margin-left: 25%;background: white;"></a>
+					</lightning-layout-item>
+				</lightning-layout>
+				<lightning-layout if:true={isMobileDevice}>
+					<lightning-layout-item size="2">
+						<div class="fontcolor" align="center" style="margin-left: 20%;">{NPS_CostOfServiceLabel}</div>
+					</lightning-layout-item>
+				</lightning-layout>
+				<br /><br />
+				<lightning-layout if:true={isMobileDevice}>
+					<lightning-layout-item size="2">
+						<a onclick={handleProductExpClick}> <img src={DT_DropBoxIconImg}
+                            style="border-radius: 50%;min-width: 65%;max-width: 70%;margin-left: 25%;background: white;"></a>
+					</lightning-layout-item>
+				</lightning-layout>
+				<lightning-layout if:true={isMobileDevice}>
+					<lightning-layout-item size="2">
+						<div class="fontcolor" align="center" style="margin-left: 25%;">{NPS_ProductExperienceLabel}
+						</div>
+					</lightning-layout-item>
+				</lightning-layout>
+				<br /><br />
+
+				<lightning-layout if:true={isMobileDevice}>
+					<lightning-layout-item size="2">
+						<a onclick={handleQualityOfServiceClick}> <img src={DT_QualityOfServiceIconImg}
+                            style="border-radius: 50%;min-width: 65%;max-width: 80%;margin-left: 30%;background: white;padding: 3%;"></a>
+					</lightning-layout-item>
+				</lightning-layout>
+				<lightning-layout if:true={isMobileDevice}>
+					<lightning-layout-item size="2">
+						<div class="fontcolor" align="center" style="margin-left: 25%;">{NPS_QualityOfServiceLabel}
+						</div>
+					</lightning-layout-item>
+				</lightning-layout>
+				<br /><br />
+
+
+				<lightning-layout if:true={isMobileDevice}>
+					<lightning-layout-item size="2">
+						<a onclick={handleSpeedOfServiceClick}> <img src={DT_SpeedOfServiceIconImg}
+                            style="border-radius: 50%;min-width: 65%;max-width: 80%;margin-left: 30%;background: white;padding: 3%;"></a>
+					</lightning-layout-item>
+				</lightning-layout>
+				<lightning-layout if:true={isMobileDevice}>
+					<lightning-layout-item size="2">
+						<div class="fontcolor" align="center" style="margin-left: 25%;">{NPS_SpeedOfServiceLabel}</div>
+					</lightning-layout-item>
+				</lightning-layout>
+				<lightning-layout if:true={isMobileDevice}>
+					<br /><br />
+            </lightning-layout>
+					<br /><br />
+					<lightning-layout>
+						<lightning-layout-item size="5"></lightning-layout-item>
+						<lightning-layout-item size="2">
+							<span class="fontcolor" style="margin-left: 20%;">
+                        <lightning-button label="Finish Survey" variant="neutral" onclick={finishSurveyOnClick}>
+                        </lightning-button>
+                    </span>
+						</lightning-layout-item>
+						<lightning-layout-item size="5"></lightning-layout-item>
+					</lightning-layout>
+			</template>
+
+			<!--ASK QUESTION TO ANSWER ADDITIONAL FEEDBACKS-->
+			<template if:true={askForditionalFeedback}>
+				<lightning-layout>
+					<lightning-layout-item size="4"></lightning-layout-item>
+					<lightning-layout-item size="4">
+						<div class="fontcolor" align="center"
+							style="font-size: large;white-space: pre-line;word-wrap: break-word;">
+							Do you want to give additional feedback ?
+						</div>
+					</lightning-layout-item>
+					<lightning-layout-item size="4"></lightning-layout-item>
+				</lightning-layout>
+				<lightning-layout>
+					<lightning-layout-item size="4"></lightning-layout-item>
+					<lightning-layout-item size="4">
+						<div class="fontcolor" align="center">
+							<lightning-radio-group name="radioButtonGroup" onchange={handleRadioChange}
+								options={options} type="button" style="font-size: 140%;color:white">
+							</lightning-radio-group>
+						</div>
+					</lightning-layout-item>
+					<lightning-layout-item size="4"></lightning-layout-item>
+
+				</lightning-layout>
+			</template>
+
+			<lightning-layout if:true={showDriverOptions}>
+				<div class="panel">
+					<lightning-layout>
+						<lightning-layout-item size="11">
+							<div style="color: blue;font-size: large;margin-left: 1%;">{typeOfDriverSelected}</div>
+						</lightning-layout-item>
+						<lightning-layout-item size="1">
+							<button title="Close" onclick={closeDriverOptionPanelOnClick} style="margin-left: 65%;">
+                            <lightning-icon icon-name="utility:chevrondown" alternative-text="Close" title="Close"
+                                size="small" variant="neutral">
+                            </lightning-icon>
+                        </button>
+						</lightning-layout-item>
+					</lightning-layout>
+					<br />
+
+					<template for:each={translatedDriverOptions} for:item="object">
+						<lightning-layout key={object.Id} style="margin-left: 1%;">
+							<lightning-layout-item size="1">
+								<lightning-input type="checkbox" name={object.Name__c} onchange={onCheckedHandler}
+									value={object.Name__c} style="width: 40%;margin-left: 10%;">
+								</lightning-input>
+							</lightning-layout-item>
+							<lightning-layout-item>
+								<p class={driverFontSize} key={object.Id}>{object.Name__c}</p>
+							</lightning-layout-item>
+						</lightning-layout>
+
+						<lightning-layout key={object.Id}>
+							<lightning-layout-item size="4" if:true={object.Driver_Option__r.AdditionalComments__c}
+								style="
+                        margin-left: 6rem;">
+								<lightning-textarea name={object.Driver_Option__r.Name}
+									placeholder="Enter your comments here" variant="standard"
+									style="width: 100%;margin-left: 5.8%;" onchange={getOtherFeedbackOnChange}>
+								</lightning-textarea>
+							</lightning-layout-item>
+						</lightning-layout>
+					</template>
+
+					<br />
+					<lightning-layout>
+						<div class="slds-align_absolute-center">
+							<lightning-button class="slds-theme_brand" variant="brand" label="Choose Another Category"
+								onclick={closeDriverOptionPanelOnClick}>
+							</lightning-button>
+
+							<lightning-button class="slds-theme_brand" variant="neutral" label="Finish Survey"
+								onclick={finishSurveyOnClick}>
+							</lightning-button>
+						</div>
+					</lightning-layout>
+				</div>
+			</lightning-layout>
+
+			<lightning-layout if:true={noDriverOptionsBoolean}>
+				<div class="panel" style="color: black;
+            font-size: large;width: 75%;margin-left: 10%;" align="center">
+					Sorry for the inconvenience no options found.
+				</div>
+			</lightning-layout>
+		</div>
+	</div>
+</template>

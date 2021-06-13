@@ -1,0 +1,16 @@
+<template>
+    <template if:true={showMQRHVTable}>
+        <lightning-card title="Related Files of the record" icon-name="standard:File">
+            <div style="width: auto;">
+                <template if:true={showMQRHVTable}>
+                    <lightning-datatable data={data} columns={columns} key-field="id" hide-checkbox-column="true"
+                        onrowaction={onRowSelectHandler}>
+                    </lightning-datatable>
+                </template>
+                <template if:false={showMQRHVTable}>
+                    <lightning-formatted-text value="No Files found" ></lightning-formatted-text>
+                </template>
+            </div>
+        </lightning-card>
+    </template>
+</template>

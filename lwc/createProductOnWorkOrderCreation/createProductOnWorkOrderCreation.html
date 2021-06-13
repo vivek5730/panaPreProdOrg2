@@ -1,0 +1,60 @@
+<template>
+    <lightning-spinner if:true={isLoading}></lightning-spinner>
+
+    <lightning-card>
+        <lightning-layout multiple-rows="true">
+            <lightning-layout-item size="12" padding="horizontal-small" if:true={JobClassification_PickList_Val.data}>
+                <lightning-combobox name="Job Classification" label="Job Classification"
+                    options={JobClassification_PickList_Val.data.values} style="width: 100%;"
+                    value={draftRecord.Job_Classification__c} onchange={handleJobClassificationChange} required>
+                </lightning-combobox>
+            </lightning-layout-item>
+        </lightning-layout>
+
+        <br />
+        <lightning-layout multiple-rows="true">
+            <lightning-layout-item size="6" padding="horizontal-small">
+                <c-lookup data-object-name="Product_Group_Master__c" selection={defaultGroup} onsearch={handleSearch}
+                    onselectionchange={handleGroupSelect} label="Product Group" placeholder="Search Product Group"
+                    disabled={draftRecord.Product_Sub_Group__c} required></c-lookup>
+            </lightning-layout-item>
+            <lightning-layout-item size="6" padding="horizontal-small">
+                <c-lookup data-object-name="Product_Sub_Group_Master__c" data-parent-field-name="Product_Group__c"
+                    data-parent-value={draftRecord.Product_Group__c} selection={defaultSubGroup} onsearch={handleSearch}
+                    onselectionchange={handleSubGroupSelect} label="Sub Group" placeholder="Search Sub Group"
+                    disabled={draftRecord.Model_Product__c} required></c-lookup>
+            </lightning-layout-item>
+        </lightning-layout>
+        <br />
+        <lightning-layout multiple-rows="true">
+            <lightning-layout-item size="6" padding="horizontal-small">
+                <c-lookup data-object-name="Product2" data-parent-field-name="Product_Sub_Group__c "
+                    data-parent-value={draftRecord.Product_Sub_Group__c} selection={defaultModel}
+                    onsearch={handleSearch} onselectionchange={handleModelSelect} label="Model Number"
+                    placeholder="Search Product Model">
+                </c-lookup>
+            </lightning-layout-item>
+            <lightning-layout-item size="6" padding="horizontal-small">
+                <c-lookup data-object-name="Symptom_Code_Master__c" data-parent-field-name="Product_Group_Master__c"
+                    data-parent-value={draftRecord.Product_Group__c} data-parent2-field-name="Job_Classification__c"
+                    data-parent2-value={draftRecord.Job_Classification__c} selection={defaultSymptomCode}
+                    onsearch={handleSearch} onselectionchange={handleSymptomCodeSelect} label="Symptom Code"
+                    placeholder="Search Symptom Code" disabled={enableSymptomCode}>
+                </c-lookup>
+            </lightning-layout-item>
+        </lightning-layout>
+        <br />
+
+        <lightning-layout multiple-rows="true">
+            <lightning-layout-item size="6" padding="around-small">
+                <lightning-button label="Cancel" variant="brand" class="slds-float_left" onclick={close}>
+                </lightning-button>
+            </lightning-layout-item>
+
+            <lightning-layout-item size="6" padding="around-small">
+                <lightning-button label="Next" variant="brand" class="slds-float_right" onclick={save}>
+                </lightning-button>
+            </lightning-layout-item>
+        </lightning-layout>
+    </lightning-card>
+</template>

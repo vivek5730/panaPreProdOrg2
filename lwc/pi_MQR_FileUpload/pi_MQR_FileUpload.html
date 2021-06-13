@@ -1,0 +1,66 @@
+<template>
+	<div class="slds-box" style="background-color:white;">
+		<div class="spinner">
+			<template if:true={isLoading}>
+				<lightning-spinner alternative-text="Loading" variant="brand" size="large">
+				</lightning-spinner>
+			</template>
+		</div>
+		<template if:true={mqrFormName}>
+			<h1 style="font-size: large;">{mqrFormName}</h1>
+		</template>
+		<br />
+		<!--std file upload-->
+		<lightning-card>
+			<div style="margin-left:2%">
+				<lightning-layout>
+					<lightning-layout-item size="12" if:true={file_MQRHV_TypeValues.data}>
+						<lightning-combobox name="progress" label="Type" value={value}
+							options={file_MQRHV_TypeValues.data.values} onchange={handlePicklistChange}
+							style="width: 95%;" required>
+						</lightning-combobox>
+					</lightning-layout-item>
+				</lightning-layout>
+				<br />
+				<lightning-layout>
+					<lightning-layout-item size="12" if:true={showFileUploadBtn}>
+						<lightning-button label="Proceed To Upload File" onclick={proceedFileUploadOnClick}
+							variant="brand">
+						</lightning-button>
+					</lightning-layout-item>
+				</lightning-layout>
+				<lightning-layout>
+					<lightning-layout-item size="12" if:false={showFileUploadBtn}>
+						<lightning-file-upload label="" name="fileUploader" accept={acceptedFormats}
+							record-id={recordId} onuploadfinished={handleUploadFinished} multiple>
+						</lightning-file-upload>
+					</lightning-layout-item>
+				</lightning-layout>
+			</div>
+		</lightning-card>
+		<br /><br />
+		<!--end std file upload-->
+
+		<template if:true={showMQRHVTable}>
+			<lightning-card title="Related Files of the record" icon-name="standard:file">
+				<div style="width: auto;">
+					<template if:true={data}>
+						<lightning-datatable data={data} columns={columns} key-field="id" hide-checkbox-column="true"
+							onrowaction={onRowSelectHandler}>
+						</lightning-datatable>
+					</template>
+				</div>
+			</lightning-card>
+		</template>
+		<template if:true={showFSLButton}>
+			<lightning-layout>
+				<lightning-layout-item size="12">
+					<lightning-button label="Navigate to FSL" onclick={navigateToWebPage} variant="brand">
+					</lightning-button>
+				</lightning-layout-item>
+			</lightning-layout>
+			<br /><br /><br />
+        </template>
+
+	</div>
+</template>

@@ -1,0 +1,43 @@
+<template>
+    <lightning-card  title="Knowledge Articles">
+    <lightning-layout>
+    <lightning-layout-item size="12" padding="around-small">
+    <lightning-input type="search" onchange={handleKeyChange} placeholder="Search for Articles..." label="Search Article" value={title} style =" margin: auto;
+    display: block;"></lightning-input>
+    </lightning-layout-item>
+    </lightning-layout>
+
+    <div class="slds-table--header-fixed_container" style="height:280px;">
+        <div class="slds-scrollable_y" style="height:100%;">
+    
+            <table class="slds-table">
+                <thead>
+                    <tr>
+                        <th>
+
+                        </th>
+                        <th>
+                           Article Title
+                        </th>
+                   </tr>
+                </thead>
+                <tbody>
+                    <template for:each={articleList} for:item="knowledgeObj" for:index="index" >
+                    <tr key={knowledgeObj.Id}>
+                       <th>
+                       
+                        <a onclick={handleCheckBoxChange} data-index={knowledgeObj.Id}>{knowledgeObj.Title}</a>
+                        
+                        </th>
+                            
+                       
+                    </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</lightning-card>
+</template>

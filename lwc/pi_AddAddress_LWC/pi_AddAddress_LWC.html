@@ -1,0 +1,182 @@
+<template>
+    <div class="slds-box" style="background-color:white;">
+        <!--Header Part starts here-->
+        <div class="slds-grid slds-wrap slds-p-bottom_small slds-p-top_small slds-border_bottom">
+            <div class="slds-col slds-size_12-of-12">
+                <lightning-layout>
+                    <Lightning-layout-item flexibility="auto">
+                        <div class="slds-text-heading_large slds-truncate slds-align_absolute-center"
+                            style="color: black;font-size: Medium;width:100%;"><br />
+                            <div style="font-size: 15px"><b>Address</b></div>
+                        </div>
+                    </Lightning-layout-item>
+                </lightning-layout>
+            </div>
+        </div>
+        <lightning-spinner if:true={isLoading}></lightning-spinner>
+
+        <lightning-layout>
+            <lightning-layout-item size="11" padding="horizontal-small">
+                <lightning-textarea label="House#/Flat#(Complete street address)" name="streetAddress"
+                    placeholder="Enter the street" style="width: 100%" required>
+                </lightning-textarea>
+            </lightning-layout-item>
+        </lightning-layout>
+        <lightning-layout multiple-rows="true">
+            <lightning-layout-item size="4" padding="horizontal-small">
+                <c-lookup data-object-name="State_Master__c" selection={defaultState} onsearch={handleSearch}
+                    onselectionchange={handleStateSelect} label="State" placeholder="Enter State Name"
+                    disabled={draftRecord.City_Master__c} required></c-lookup>
+
+            </lightning-layout-item>
+            <lightning-layout-item size="4" padding="horizontal-small">
+                <c-lookup data-object-name="City_Master__c" data-parent-field-name="State__c"
+                    data-parent-value={draftRecord.State_Master__c} selection={defaultCity} onsearch={handleSearch}
+                    onselectionchange={handleCitySelect} label="City" placeholder="Enter City Name"
+                    disabled={draftRecord.Area_Master__c} required></c-lookup>
+
+            </lightning-layout-item>
+            <lightning-layout-item size="4" padding="horizontal-small">
+                <c-lookup data-object-name="Area_Master__c" data-parent-field-name="City__c"
+                    data-parent-value={draftRecord.City_Master__c} selection={defaultArea} onsearch={handleSearch}
+                    onselectionchange={handleAreaSelect} label="Area" placeholder="Enter Area Name" required></c-lookup>
+
+            </lightning-layout-item>
+        </lightning-layout>
+        <br />
+        <lightning-layout multiple-rows="true">
+            <lightning-layout-item size="4" padding="horizontal-small" if:true={address_Type_PickList_Val.data}>
+                <lightning-combobox name="AddressType" label="Address Type" placeholder="-Select type-"
+                    value={addressTypeAutopopulate} options={address_Type_PickList_Val.data.values} style="width: 100%;"
+                    onchange={handleAddressTypeChange}>
+                </lightning-combobox>
+            </lightning-layout-item>
+            <lightning-layout-item size="4" padding="horizontal-small">
+                <lightning-input type="Text" label="Country" disabled="true" name="country" value={defaultCountryValue}
+                    style="width: 100%;" required>
+                </lightning-input>
+            </lightning-layout-item>
+            <lightning-layout-item size="4" padding="horizontal-small">
+                <lightning-input pattern="[0-9]{6}" maxlength="6" min="6" max="6" name="searchPincode" label="Pincode"
+                    placeholder="Enter pincode" value={postalCode} disabled={isPincodeDisabled}
+                    onkeyup={searchPinCodeHandler} style="width: 100%;" required>
+                </lightning-input>
+            </lightning-layout-item>
+
+            <br />
+        </lightning-layout>
+        <lightning-layout multiple-rows="true">
+            <lightning-layout-item size="12" padding="horizontal-small">
+                <lightning-textarea label="Landmark" name="inputLandmark" placeholder="Enter the nearest landmark"
+                    style="width: 100%">
+                </lightning-textarea>
+            </lightning-layout-item>
+        </lightning-layout>
+
+        <br />
+        <lightning-layout>
+            <lightning-layout-item flexibility="auto">
+                <div class="slds-clearfix">
+                    <lightning-button label="Save" variant="brand" onclick={saveAddressOnClick}
+                        class="slds-float_right slds-p-right_small slds-p-left_small"></lightning-button>
+                </div>
+            </lightning-layout-item>
+        </lightning-layout>
+
+        <!--PIN CODE TABLE-->
+        <template if:true={hasMultiplePinCodes}>
+            <div>
+                <section role="dialog" tabindex="-1" aria-modal="true"
+                    class="slds-modal slds-fade-in-open slds-modal_medium">
+                    <div class="slds-scrollable" style="height:40rem">
+                        <div class="slds-modal__container">
+                            <div class="slds-modal__content slds-p-around_medium"
+                                style="border-left: 3px groove;border-right: 3px groove;border-top: 3px groove">
+
+                                <div style="width: auto;">
+                                    <template if:true={data}>
+                                        <lightning-card title="Related Areas" icon-name="standard:account">
+                                            <lightning-layout>
+                                                <lightning-layout-item size="12">
+                                                    <div class="slds-scrollable">
+                                                        <table
+                                                            class="slds-table slds-table_bordered slds-table_cell-buffer">
+                                                            <thead>
+                                                                <tr class="slds-text-title_caps">
+                                                                    <th scope="col">
+                                                                        <div class="slds-truncate">
+                                                                            Area Name
+                                                                        </div>
+                                                                    </th>
+                                                                    <th scope="col">
+                                                                        <div class="slds-truncate">
+                                                                            City Name
+                                                                        </div>
+                                                                    </th>
+                                                                    <th scope="col">
+                                                                        <div class="slds-truncate">
+                                                                            State Name
+                                                                        </div>
+                                                                    </th>
+                                                                    <th scope="col">
+                                                                        <div class="slds-truncate">
+                                                                            Pincode
+                                                                        </div>
+                                                                    </th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <template for:each={data} for:item="mrq"
+                                                                    for:index="indexParent2">
+                                                                    <tr key={mrq.Id}>
+                                                                        <td>
+                                                                            {mrq.Name}
+                                                                        </td>
+                                                                        <td>
+                                                                            {mrq.City__r.Name}
+                                                                        </td>
+                                                                        <!--td>
+                                                                            {mrq.State__r.Name}
+                                                                        </td-->
+                                                                        <td>
+                                                                            {mrq.City__r.State__r.Name}
+                                                                        </td>
+                                                                        <td>
+                                                                            {mrq.Postal_Code__r.Name}
+                                                                        </td>
+                                                                        <td>
+                                                                            <lightning-button-icon label="Select"
+                                                                                class="btnIconOverlay" data-id={mrq.Id}
+                                                                                icon-name="utility:add"
+                                                                                onclick={fillAddressBasedOnPincodeClick}>
+                                                                            </lightning-button-icon>
+                                                                        </td>
+                                                                    </tr>
+                                                                </template>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </lightning-layout-item>
+                                            </lightning-layout>
+                                        </lightning-card>
+                                    </template>
+                                    <template if:false={data}>
+                                        <div
+                                            style="width: auto;text-align: center;font-size: x-large;font-style: italic;font-family: cursive;">
+                                            No Areas found!</div>
+                                    </template>
+                                </div>
+                            </div>
+                            <footer class="slds-modal__footer"
+                                style="border-left: 3px groove;border-right: 3px groove;border-bottom: 3px groove;">
+                                <lightning-button label="Cancel" variant="neutral"
+                                    onclick={closeMultiplePinCodeRecordModal}>
+                                </lightning-button>
+                            </footer>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </template>
+    </div>
+</template>

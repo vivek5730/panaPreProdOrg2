@@ -1,0 +1,85 @@
+<!--
+  Created By            : Vivek S
+  Created Date          : 16-Feb-2020
+  Purpose               : Used to upload file on WorkOrder
+  Referenced by         : Call_PI_WorkOrder_FileUpload(Aura), 
+  App                   : PI_WorkOrder_FileUploadApp(App)
+  VF                    : PI_WorkOrder_FileUploadVf
+-->
+
+
+<template>
+    <div class="spinner">
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading" variant="brand" size="large">
+            </lightning-spinner>
+        </template>
+    </div>
+    <div class="slds-box" style="background-color:white;">
+        <!--
+        CardTitle:: {cardTitle}
+-->
+        <div class="slds-grid slds-wrap slds-p-bottom_small slds-p-top_small slds-border_bottom">
+            <div class="slds-col slds-size_12-of-12">
+                <lightning-layout>
+                    <Lightning-layout-item flexibility="auto">
+                        <div class='card1' style='width:100%;'>
+                            <div class="slds-text-heading_large slds-truncate slds-align_absolute-center"
+                                style="color: black;font-size: Medium;"><br />
+                                <div style="font-size: 15px"><b>File Upload</b></div>
+                            </div>
+                        </div>
+                    </Lightning-layout-item>
+                </lightning-layout>
+            </div>
+        </div>
+        <!--Header Part ends here-->
+       
+        <template if:true={showUploadComp}>
+            <lightning-card>
+                <div style="margin-left:2%">
+                    <lightning-layout>
+                        <lightning-layout-item size="12" if:true={fileType_PicklistValues}>
+                            <lightning-combobox name="progress" label="Type" value={value} placeholder="-Select-"
+                                options={fileType_PicklistValues} onchange={handlePicklistChange} style="width: 95%;"
+                                required>
+                            </lightning-combobox>
+
+
+                        </lightning-layout-item>
+                    </lightning-layout>
+                    <br />
+                    <lightning-layout>
+                        <lightning-layout-item size="12" if:true={showFileUpload}>
+
+                            <lightning-button label="Proceed To Upload File" onclick={proceedFileUploadOnClick}
+                                variant="brand">
+                            </lightning-button>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                    <lightning-layout>
+                        <lightning-layout-item size="12" if:false={showFileUpload}>
+                            <lightning-file-upload label="Attach file" name="fileUploader" accept={acceptedFormats}
+                                record-id={recordId} onuploadfinished={handleUploadFinished} multiple>
+                            </lightning-file-upload>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                    <br />
+                </div>
+            </lightning-card>
+        </template>
+        <br />
+
+        <template if:true={hasRelatedFiles}>
+            <lightning-card title="Related Files of the record" icon-name="standard:file">
+                <div style="width: auto;">
+                    <template if:true={data}>
+                        <lightning-datatable data={data} columns={columns} key-field="id" hide-checkbox-column="true"
+                            onrowaction={onRowSelectHandler}>
+                        </lightning-datatable>
+                    </template>
+                </div>
+            </lightning-card>
+        </template>
+    </div>
+</template>

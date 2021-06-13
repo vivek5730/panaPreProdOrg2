@@ -1,0 +1,130 @@
+<template>
+    <lightning-spinner if:true={isLoading}></lightning-spinner>
+
+    <lightning-card title="Product Information">
+        <template if:true={isEditable}>
+            <lightning-layout multiple-rows="true">
+                <lightning-layout-item size="12" padding="horizontal-small"
+                    if:true={JobClassification_PickList_Val.data}>
+                    <lightning-combobox name="Job Classification" label="Job Classification"
+                        options={JobClassification_PickList_Val.data.values} style="width: 100%;"
+                        value={jobClassificationValue} onchange={handleJobClassificationChange} required>
+                    </lightning-combobox>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="6" padding="horizontal-small" if:true={jobTypeIsOutdoor}>
+                    <c-lookup data-object-name="Product_Group_Master__c" selection={defaultGroup}
+                        onsearch={handleSearch} onselectionchange={handleGroupSelect} label="Product Group"
+                        placeholder="Search Product Group" disabled={draftRecord.Product_Sub_Group__c} required>
+                    </c-lookup>
+                </lightning-layout-item>
+                <lightning-layout-item size="6" padding="horizontal-small" if:false={jobTypeIsOutdoor}>
+                    <lightning-input type="text" value={productGroup} label="Product Group" disabled="true">
+                    </lightning-input>
+                </lightning-layout-item>
+                <lightning-layout-item size="6" padding="horizontal-small">
+                    <c-lookup data-object-name="Product_Sub_Group_Master__c" data-parent-field-name="Product_Group__c"
+                        data-parent-value={draftRecord.Product_Group__c} selection={defaultSubGroup}
+                        onsearch={handleSearch} onselectionchange={handleSubGroupSelect} label="Sub Group"
+                        placeholder="Search Sub Group" disabled={draftRecord.Model_Product__c} required></c-lookup>
+                </lightning-layout-item>
+                <lightning-layout-item size="6" padding="horizontal-small">
+                    <c-lookup data-object-name="Product2" data-parent-field-name="Product_Sub_Group__c "
+                        data-parent-value={draftRecord.Product_Sub_Group__c} selection={defaultModel}
+                        onsearch={handleSearch} onselectionchange={handleModelSelect} label="Model Number"
+                        placeholder="Search Product Model" required></c-lookup>
+                </lightning-layout-item>
+
+                <!--Symptom code-->
+                <lightning-layout-item size="6" padding="horizontal-small">
+                    <c-lookup data-object-name="Symptom_Code_Master__c" data-parent-field-name="Product_Group_Master__c"
+                        data-parent-value={draftRecord.Product_Group__c} data-parent2-field-name="Job_Classification__c"
+                        data-parent2-value={jobClassificationValue} selection={defaultSymptomCode}
+                        onsearch={handleSearch} onselectionchange={handleSymptomCodeSelect} label="Symptom Code"
+                        placeholder="Search Symptom Code" disabled={enableSymptomCode}></c-lookup>
+                </lightning-layout-item>
+
+                <!--Defect code-->
+                <lightning-layout-item size="6" padding="horizontal-small" if:true={isDefectRepairEditable}>
+                    <c-lookup data-object-name="Defect_Code_lookup_Base__c"
+                        data-parent-field-name="Job_Classification__c" data-parent-value={jobClassificationValue}
+                        data-parent2-field-name="Product_Group_Master__c"
+                        data-parent2-value={draftRecord.Product_Group__c}
+                        data-parent3-field-name="Symptom_Code_Master__c"
+                        data-parent3-value={draftRecord.Symptom_Code_Master__c} selection={defaultDefectCode}
+                        onsearch={handleSearch} onselectionchange={handleDefectCodeSelect} label="Defect Code"
+                        placeholder="Search Defect Code" disabled={draftRecord.Repair_Code__c}>
+                    </c-lookup>
+                </lightning-layout-item>
+
+                <!--repair code-->
+                <lightning-layout-item size="6" padding="horizontal-small" if:true={isDefectRepairEditable}>
+                    <c-lookup data-object-name="Repair_Code__c" data-parent-field-name="Job_Classification__c"
+                        data-parent-value={jobClassificationValue} data-parent2-field-name="Product_Group_Master__c"
+                        data-parent2-value={draftRecord.Product_Group__c}
+                        data-parent3-field-name="Defect_Code_lookup_Base__c"
+                        data-parent3-value={draftRecord.Defect_Code_lookup_Base__c} selection={defaultRepairCode}
+                        onsearch={handleSearch} onselectionchange={handleRepairCodeSelect} label="Repair Code"
+                        placeholder="Search Repair Code"></c-lookup>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="3" padding="around-small">
+                    <lightning-button label="Save" variant="brand" onclick={save}></lightning-button>
+                </lightning-layout-item>
+                <lightning-layout-item size="3" padding="around-small">
+                    <lightning-button label="Cancel" variant="brand" onclick={cancel}></lightning-button>
+                </lightning-layout-item>
+            </lightning-layout>
+        </template>
+
+        <template if:false={isEditable}>
+            <lightning-layout multiple-rows="true">
+                <lightning-layout-item size="12" padding="horizontal-small">
+                    <lightning-input type="text" value={jobClassification} label="Job Classification" disabled="true">
+                    </lightning-input>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="6" padding="horizontal-small">
+                    <lightning-input type="text" value={productGroup} label="Product Group" disabled="true">
+                    </lightning-input>
+                </lightning-layout-item>
+                <lightning-layout-item size="6" padding="horizontal-small">
+                    <lightning-input type="text" value={productSubGroup} label="Sub Group" disabled="true">
+                    </lightning-input>
+                </lightning-layout-item>
+                <lightning-layout-item size="6" padding="horizontal-small">
+                    <lightning-input type="text" value={modelNumber} label="Model Number" disabled="true">
+                    </lightning-input>
+                </lightning-layout-item>
+                <lightning-layout-item size="6" padding="horizontal-small">
+                    <lightning-input type="text" value={symptomCode} label="Symptom Code" disabled="true">
+                    </lightning-input>
+                </lightning-layout-item>
+
+
+            </lightning-layout>
+        </template>
+
+        <template if:false={isDefectRepairEditable}>
+            <lightning-layout multiple-rows="true">
+                <lightning-layout-item size="6" padding="horizontal-small">
+                    <lightning-input type="text" value={defectCode} label="Defect Code" disabled="true">
+                    </lightning-input>
+                </lightning-layout-item>
+                <lightning-layout-item size="6" padding="horizontal-small">
+                    <lightning-input type="text" value={repairCode} label="Repair Code" disabled="true">
+                    </lightning-input>
+                </lightning-layout-item>
+            </lightning-layout>
+        </template>
+
+        <template if:false={isEditable}>
+            <lightning-layout multiple-rows="true">
+                <lightning-layout-item size="6" padding="around-small" if:true={enableDisableProductEditBtn}>
+                    <lightning-button label="Edit" variant="brand" onclick={edit}></lightning-button>
+                </lightning-layout-item>
+            </lightning-layout>
+        </template>
+
+    </lightning-card>
+</template>
